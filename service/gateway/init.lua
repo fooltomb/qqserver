@@ -80,7 +80,7 @@ local disconnect=function ( fd )
 		return
 	end
 
-	local x = playerid=c.playerID
+	local playerid=c.playerID
 
 	if not playerid then
 		return
