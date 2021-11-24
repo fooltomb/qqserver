@@ -54,6 +54,7 @@ local process_msg=function ( fd,msgstr )
 		local nodecfg = runconfig[node]
 		local loginid = math.random(1,#nodecfg.login)
 		local login = "login"..loginid
+		print(login)
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else
 		local gplayer = players[playerID]
