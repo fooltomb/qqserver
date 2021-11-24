@@ -48,7 +48,7 @@ local process_msg=function ( fd,msgstr )
 
 	local conn=conns[fd]
 	local playerID = conn.playerID
-
+	print(playerID)
 	if not playerID then
 		local node=skynet.getenv("node")
 		local nodecfg = runconfig[node]
