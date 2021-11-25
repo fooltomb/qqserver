@@ -1,5 +1,5 @@
 local skynet = require "skynet"
-
+local skynet_manager = require "skynet.manager"
 local runconfig = require "runconfig"
 
 skynet.start(function (  )
