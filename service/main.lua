@@ -8,7 +8,12 @@ skynet.start(function (  )
 	local nodecfg = runconfig[mynode]
 
 	skynet.error("[start main]")
-	skynet.newservice("gateway","gateway",1)
+	--gateway
+	for i,v in pairs(nodecfg.gateway or {}) do
+		local srv = skynet.newservice("gateway","gateway",i)
+		skynet.name("gateway"..i,srv)
+	end
+	--skynet.newservice("gateway","gateway",1)
 
 	--login
 	for i,v in pairs(nodecfg.login or {}) do
