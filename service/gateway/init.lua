@@ -48,13 +48,11 @@ local process_msg=function ( fd,msgstr )
 
 	local conn=conns[fd]
 	local playerID = conn.playerID
-	print(playerID)
 	if not playerID then
 		local node=skynet.getenv("node")
 		local nodecfg = runconfig[node]
 		local loginid = math.random(1,#nodecfg.login)
 		local login = "login"..loginid
-		print(login)
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else
 		local gplayer = players[playerID]
@@ -123,7 +121,6 @@ function s.init(  )
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
-	skynet.error("why")
 	local listenfd = socket.listen("0.0.0.0",port)
 
 	skynet.error("listen socket :","0.0.0.0",port)

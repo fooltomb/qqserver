@@ -10,18 +10,6 @@ local M = {
 
 	resp={}
 }
-function init(  )
-	skynet.dispatch("lua",dispatch)
-	if M.init then
-		M.init()
-	end
-end
-
-function M.start( name,id,... )
-	M.name=name
-	M.id=tonumber(id)
-	skynet.start(init)
-end
 
 function traceback( err )
 	skynet.error(tostring(err))
@@ -43,6 +31,13 @@ local dispatch = function ( session,address,cmd,... )
 	skynet.retpack(table.unpack(ret,2))
 end
 
+function init(  )
+	skynet.dispatch("lua",dispatch)
+	if M.init then
+		M.init()
+	end
+end
+
 function M.call( node,srv,... )
 	local mynode = skynet.getenv("node")
 	if node==mynode then
@@ -59,6 +54,12 @@ function M.send( node,src,... )
 	else
 		return cluster.send(node,srv,...)
 	end
+end
+
+function M.start( name,id,... )
+	M.name=name
+	M.id=tonumber(id)
+	skynet.start(init)
 end
 
 return M
