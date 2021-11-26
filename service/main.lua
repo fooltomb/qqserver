@@ -15,12 +15,15 @@ skynet.start(function (  )
 	cluster.open(mynode)
 
 	skynet.error("[start main]")
-	--gateway
+	--[[gateway
+
 	for i,v in pairs(nodecfg.gateway or {}) do
 		local srv = skynet.newservice("gateway","gateway",i)
 		skynet.name("gateway"..i,srv)
 	end
-	--skynet.newservice("gateway","gateway",1)
+	--]]
+	local srv=skynet.newservice("gateway","gateway",1)
+	skynet.name("gateway1",srv)
 
 	--login
 	for i,v in pairs(nodecfg.login or {}) do
