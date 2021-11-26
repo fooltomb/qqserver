@@ -1,11 +1,18 @@
 local skynet = require "skynet"
 local skynet_manager = require "skynet.manager"
 local runconfig = require "runconfig"
+local cluster = require "skynet.cluster"
 
 skynet.start(function (  )
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
+	--节点管理
+	local nodemgr = skynet.newservice("nodemgr","nodemgr",0)
+	skynet.name("nodemgr",nodemgr)
+	--集群
+	cluster.reload(runconfig.cluster)
+	cluster.open(mynode)
 
 	skynet.error("[start main]")
 	--gateway
@@ -20,5 +27,15 @@ skynet.start(function (  )
 		local srv = skynet.newservice("login","login",i)
 		skynet.name("login"..i,srv)
 	end
+
+	local anode = runconfig.agentmgr.node
+	if mynode==anode then
+		local srv = skynet.newservice("agentmgr","agentmgr",0)
+		skynet.name("agentmgr",srv)
+	else
+		local proxy = cluster.proxy(anode,"agentmgr")
+		skynet.name("agentmgr,proxy")
+	end
+
 	skynet.exit()
 end)
