@@ -32,7 +32,7 @@ s.resp.reqlogin=function ( source,playerid,node,gate )
 		return false
 	end
 	-- 顶替
-	if mplayer and then
+	if mplayer then
 		local pnode = mplayer.node
 		local pagent = mplayer.agent
 		local pgate = mplayer.gate
@@ -72,5 +72,5 @@ s.resp.reqkick=function ( source,playerid,reason )
 	s.send(pnode,pgate,"kick",playerid)
 	players[playerid]=nil
 	return true
-	
+
 end
