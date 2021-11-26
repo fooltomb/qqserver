@@ -128,7 +128,7 @@ function s.init(  )
 	socket.start(listenfd,connect)
 end
 
-s.start(...)
+
 
 s.resp.send_by_fd=function ( source,fd,msg )
 	if not conns[fd] then
@@ -184,3 +184,4 @@ s.resp.kick=function ( source,playerid )
 	socket.close(c.fd)
 end
 
+s.start(...)
