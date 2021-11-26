@@ -33,6 +33,7 @@ s.resp.exit=function ( source )
 end
 
 s.client.work=function ( msg )
+	skynet.error("working.."..msg)
 	s.data.coin=s.data.coin+1
 	return {"work",s.data.coin}
 end
