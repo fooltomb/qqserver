@@ -19,7 +19,8 @@ function gatePlayer(  )
 		playerID=nil,
 		agent=nil,
 		conn=nil
-	} 
+	}
+	return m
 end
 
 

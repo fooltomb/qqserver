@@ -42,7 +42,7 @@ s.resp.reqlogin=function ( source,playerid,node,gate )
 		s.send(pnode,pgate,"send",playerid,{"kick","顶替下线"})
 		s.call(pnode,pgate,"kick",playerid)
 	end
-	skynet.error("login here")
+	--skynet.error("login here")
 	--上线
 	local player = mgrplayer()
 	player.playerid = playerid
