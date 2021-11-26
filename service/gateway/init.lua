@@ -143,10 +143,12 @@ end
 s.resp.send=function ( source,playerid,msg )
 	local gplayer = players[playerid]
 	if gplayer == nil then
+		skynet.error("gplayer is nil")
 		return
 	end
 	local c = gplayer.conn
 	if c==nil then
+		skynet.error("conn is nil")
 		return
 	end
 	s.resp.send_by_fd(nil,c.fd,msg)
