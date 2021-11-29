@@ -5,7 +5,7 @@ s.client={}
 
 s.client.login=function ( fd,msg,source )
 	skynet.error("login recv "..msg[1].." "..msg[2])
-	local playerid=msg[2]
+	local playerid=tonumber(msg[2])
 	local pw = msg[3]
 	local gate = source
 	node = skynet.getenv("node")
