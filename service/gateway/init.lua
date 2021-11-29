@@ -143,6 +143,9 @@ end
 
 s.resp.send=function ( source,playerid,msg )
 	local gplayer = players[playerid]
+	for k,v in pairs(players) do
+		print(k,v)
+	end
 	if gplayer == nil then
 		skynet.error("cant get player,id:"..playerid)
 		skynet.error("gplayer is nil")
