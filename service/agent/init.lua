@@ -9,7 +9,7 @@ s.resp.client=function ( source,cmd,msg )
 	if s.client[cmd] then
 		local ret_msg = s.client[cmd](msg,source)
 		if ret_msg then
-			--skynet.error(s.id)
+			skynet.error("agent id in agent:"..s.id)
 			skynet.send(source,"lua","send",s.id,ret_msg)
 		end
 	else

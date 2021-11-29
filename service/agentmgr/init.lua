@@ -60,8 +60,10 @@ end
 s.resp.reqkick=function ( source,playerid,reason )
 	local mplayer = players[playerid]
 	if not mplayer then
+		skynet.error("mplayer is nil")
 		return false
 	end
+	skynet.error("player STATUS:"..mplayer.status)
 	if mplayer.status~=STATUS.GAME then
 		return false
 	end
