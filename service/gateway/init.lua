@@ -55,11 +55,14 @@ local process_msg=function ( fd,msgstr )
 		local loginid = math.random(1,#nodecfg.login)
 		local login = "login"..loginid
 		skynet.send(login,"lua","client",fd,cmd,msg)
-	else
-		local gplayer = players[playerID]
-		skynet.error("get players id is:"..playerID)
-		local agent = gplayer.agent
-		skynet.send(agent,"lua","client",cmd,msg)
+	else		
+		if cmd="exit" then
+			skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
+		else
+			local gplayer = players[playerID]
+			local agent = gplayer.agent
+			skynet.send(agent,"lua","client",cmd,msg)
+		end
 	end
 end
 
@@ -143,11 +146,7 @@ end
 
 s.resp.send=function ( source,playerid,msg )
 	local gplayer = players[playerid]
-	for k,v in pairs(players) do
-		print(k,v)
-	end
 	if gplayer == nil then
-		skynet.error("cant get player,id:"..playerid)
 		skynet.error("gplayer is nil")
 		return
 	end
