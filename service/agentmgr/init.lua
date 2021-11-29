@@ -51,6 +51,7 @@ s.resp.reqlogin=function ( source,playerid,node,gate )
 	player.status=STATUS.LOGIN
 	players[playerid]=player
 	local agent = s.call(node,"nodemgr","newservice","agent","agent",playerid)
+	skynet.error("agent id is :"..s.id)
 	player.agent=agent
 	player.STATUS=STATUS.GAME
 	return true,agent
