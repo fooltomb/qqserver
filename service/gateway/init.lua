@@ -57,7 +57,8 @@ local process_msg=function ( fd,msgstr )
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else		
 		if cmd=="exit" then
-			skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
+			local isok=skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
+			skynet.error(isok)
 		else
 			local gplayer = players[playerID]
 			local agent = gplayer.agent
@@ -114,7 +115,7 @@ local recv_loop = function ( fd )
 end
 
 local connect = function ( fd,addr )
-	print("connect form "..addr.." "..fd)
+	--print("connect form "..addr.." "..fd)
 	local c = conn()
 	conns[fd]=c
 	c.fd=fd
