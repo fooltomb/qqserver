@@ -167,8 +167,6 @@ s.resp.sure_agent=function ( source,fd,playerid,agent )
 		return false
 	end
 	conn.playerID=playerid
-	skynet.error("agent id in gateway sure_agent:"..agent.id)
-
 	local gplayer = gatePlayer()
 	gplayer.playerID=playerid
 	gplayer.agent=agent
