@@ -57,7 +57,7 @@ local process_msg=function ( fd,msgstr )
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else
 		local gplayer = players[playerID]
-		skynet.error("get players id is:"..playerid)
+		skynet.error("get players id is:"..playerID)
 		local agent = gplayer.agent
 		skynet.send(agent,"lua","client",cmd,msg)
 	end
