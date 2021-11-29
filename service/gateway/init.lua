@@ -56,7 +56,7 @@ local process_msg=function ( fd,msgstr )
 		local login = "login"..loginid
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else		
-		if cmd="exit" then
+		if cmd=="exit" then
 			skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
 		else
 			local gplayer = players[playerID]
