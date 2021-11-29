@@ -3,7 +3,7 @@ local cluster=require "skynet.cluster"
 
 local M = {
 	name="",
-	id=0,
+	id="",
 
 	exit=nil,
 	init=nil,
@@ -58,7 +58,7 @@ end
 
 function M.start( name,id,... )
 	M.name=name
-	M.id=tonumber(id)
+	M.id=id
 	skynet.start(init)
 end
 
