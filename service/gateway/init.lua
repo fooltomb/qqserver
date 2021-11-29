@@ -57,6 +57,7 @@ local process_msg=function ( fd,msgstr )
 		skynet.send(login,"lua","client",fd,cmd,msg)
 	else
 		local gplayer = players[playerID]
+		skynet.error("get players id is:"..playerid)
 		local agent = gplayer.agent
 		skynet.send(agent,"lua","client",cmd,msg)
 	end
@@ -143,9 +144,7 @@ end
 s.resp.send=function ( source,playerid,msg )
 	local gplayer = players[playerid]
 	if gplayer == nil then
-		for k,v in pairs(players) do
-			print(k,v)
-		end
+		skynet.error("cant get player,id:"..playerid)
 		skynet.error("gplayer is nil")
 		return
 	end
@@ -180,6 +179,7 @@ s.resp.kick=function ( source,playerid )
 		return
 	end
 	local c = gplayer.conn
+	skynet.error("kick player id:"..playerid)
 	players[playerid]=nil
 	if not c then
 		return
