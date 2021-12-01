@@ -27,6 +27,7 @@ local db = nil
 s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	--todo 防注入
 	local res,err = db:query(string.format("insert into 'player' ('name','password') values(%s,%s)",playername,pwd))
+	print(err)
 	for k,v in pairs(res) do
 		print(k,v.id)
 	end
