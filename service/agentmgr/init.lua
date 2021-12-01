@@ -25,7 +25,11 @@ end
 local db = nil
 
 s.resp.reqregister=function ( source,playername,pwd,node,gate)
-	-- body
+	--todo 防注入
+	local res,err = db:query(string.format("insert into 'player' ('name','password') values(%s,%s)",playername,pwd))
+	for k,v in pairs(res) do
+		print(k,v.id)
+	end
 end
 
 s.resp.reqlogin=function ( source,playerid,node,gate )
@@ -95,10 +99,6 @@ s.init=function (  )
 		max_packet_size=1024*1024,
 		on_connect=nil
 	})
-	local res = db:query("select * form player")
-	for k,v in pairs(res) do
-		print(k,v.id,v.name,v.password)
-	end
 end
 
 s.start(...)

@@ -25,6 +25,14 @@ s.client.login=function ( fd,msg,source )
 	return {"login",0,"登陆成功"}
 end
 
+s.client.register=function ( fd,msg,source )
+	local playername = msg[2]
+	local pwd = msg[3]
+	local gate = source
+	node=skynet.getenv("node")
+	local isok,agent,playerid = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
+end
+
 s.resp.client=function ( source,fd,cmd,msg )
 	if s.client[cmd] then
 		local ret_msg = s.client[cmd](fd,msg,source)
