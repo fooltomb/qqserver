@@ -26,7 +26,9 @@ s.init=function (  )
 end
 
 s.resp.kick=function ( source )
+	skynet.error("im kicked")
 	skynet.sleep(200)
+
 end
 
 s.resp.exit=function ( source )

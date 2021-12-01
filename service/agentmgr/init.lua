@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local s = require "service"
+local mysql = require "skynet.db.mysql"
 
 STATUS={
 	LOGIN=1,
@@ -19,6 +20,12 @@ function mgrplayer(  )
 		gate=nil
 	}
 	return m
+end
+--database
+local db = nil
+
+s.resp.reqregister=function ( source,playername,pwd,node,gate)
+	-- body
 end
 
 s.resp.reqlogin=function ( source,playerid,node,gate )
@@ -76,6 +83,22 @@ s.resp.reqkick=function ( source,playerid,reason )
 	players[playerid]=nil
 	return true
 
+end
+
+s.init=function (  )
+	db=mysql.connect({
+		host="127.0.0.1",
+		port="3306",
+		user="root",
+		password="123456",
+		database="beanfight",
+		max_packet_size=1024*1024,
+		on_connect=nil
+	})
+	local res = db:query("select * form player")
+	for k,v in pairs(res) do
+		print(k,v.id,v.name,v.password)
+	end
 end
 
 s.start(...)
