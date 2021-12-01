@@ -24,13 +24,30 @@ end
 --database
 local db = nil
 
+local function dump( res,tab )
+	tab=tab or 0
+	if(tab==0)then
+		skynet.error("........dump..........")
+	end
+	if type(res)=="table" then
+		skynet.error(string.rep("\t",tab).."{")
+		for k,v in pairs(res) do
+			if type(v)=="table" then
+				dump(v,tab+1)
+			else
+				skynet.error(string.rep("\t",tab),k,"=",v,",")
+			end
+		end
+		skynet.error(string.rep("\t",tab).."}")
+	else
+		skynet.error(string.rep("\t",tab),res)
+	end
+end 
+
 s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	--todo 防注入
 	local res,err = db:query(string.format("insert into 'player' ('name','password') values(%s,%s)",playername,pwd))
-	print(err)
-	for k,v in pairs(res) do
-		print(k,v.id)
-	end
+	dump(res)
 end
 
 s.resp.reqlogin=function ( source,playerid,node,gate )
