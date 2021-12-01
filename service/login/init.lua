@@ -31,6 +31,7 @@ s.client.register=function ( fd,msg,source )
 	local gate = source
 	node=skynet.getenv("node")
 	local isok,agent,playerid = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
+	return {"register",0,"注册成功"}
 end
 
 s.resp.client=function ( source,fd,cmd,msg )
