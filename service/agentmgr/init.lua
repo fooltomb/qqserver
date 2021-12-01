@@ -34,6 +34,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 end
 
 s.resp.reqlogin=function ( source,playerid,node,gate )
+	--todo 防注入
 	local mplayer = players[playerid]
 	if mplayer and mplayer.status==STATUS.LOGOUT then
 		skynet.error("reqlogin fail,at status LOGOUT "..playerid)
