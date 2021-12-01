@@ -48,7 +48,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	--todo 防注入
 	local request = string.format("insert into 'player' ('name','password') values('%s','%s')",playername,pwd)
 	print(request)
-	local res,err = db:query(req)
+	local res,err = db:query(request)
 	dump(res)
 end
 
