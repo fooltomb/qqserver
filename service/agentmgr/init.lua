@@ -59,7 +59,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 end
 
 s.resp.reqlogin=function ( source,playername,pwd,nod,gate )
-	local request = string.format("select * from player where name=%s",playername)
+	local request = string.format("select * from player where name=\'%s\'",playername)
 	local res = db:query(request)
 	dump(res)
 	return false,"测试"
