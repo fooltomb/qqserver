@@ -61,8 +61,20 @@ end
 s.resp.reqlogin=function ( source,playername,pwd,nod,gate )
 	local request = string.format("select * from player where name=\'%s\'",playername)
 	local res = db:query(request)
-	dump(res)
-	return false,"测试"
+	if not res.badresult then
+		if #res==0 then
+			return false,"没有该用户"
+		else
+			if res[0].password~=pwd then
+				return false,"密码错误"
+			end
+			local playerid = res[0].id
+			local loginok,agent = s.resp.login(source,playerid,node,gate)
+			return loginok,agent,playerid
+		end
+	else
+		return false,"db error"
+	end
 end
 
 s.resp.login=function ( source,playerid,node,gate )

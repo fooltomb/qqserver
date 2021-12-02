@@ -9,7 +9,7 @@ s.client.login=function ( fd,msg,source )
 	local pwd = msg[3]
 	local gate = source
 	node = skynet.getenv("node")
-	local isok,agent = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
+	local isok,agent,playerid = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
 	if not isok then
 		return {"login",1,agent}
 	end
