@@ -51,7 +51,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	local res= db:query(request)
 	if not res.badresult then
 		local playerid = res.insert_id
-		print(insert_id)
+		print(playerid)
 	else
 		print(res.err)
 	end
