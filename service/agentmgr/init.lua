@@ -51,14 +51,21 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	local res= db:query(request)
 	if not res.badresult then
 		local playerid = res.insert_id
-		local loginok,agent = s.resp.reqlogin(source,playerid,node,gate)
+		local loginok,agent = s.resp.login(source,playerid,node,gate)
 		return loginok,agent,playerid
 	else
 		return false,"改用户名已被注册"
 	end
 end
 
-s.resp.reqlogin=function ( source,playerid,node,gate )
+s.resp.reqlogin=function ( source,playername,pwd,nod,gate )
+	local request = string.format("select * from player where name=%s",playername)
+	local res = db:query(request)
+	dump(res)
+	return false,"测试"
+end
+
+s.resp.login=function ( source,playerid,node,gate )
 	--todo 防注入
 	local mplayer = players[playerid]
 	if mplayer and mplayer.status==STATUS.LOGOUT then

@@ -5,14 +5,11 @@ s.client={}
 
 s.client.login=function ( fd,msg,source )
 	skynet.error("login recv "..msg[1].." "..msg[2])
-	local playerid=tonumber(msg[2])
-	local pw = msg[3]
+	local playername=msg[2]
+	local pwd = msg[3]
 	local gate = source
 	node = skynet.getenv("node")
-	if pw ~= "123" then
-		return {"login",1,"密码错误"}
-	end
-	local isok,agent = skynet.call("agentmgr","lua","reqlogin",playerid,node,gate)
+	local isok,agent = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
 	if not isok then
 		return {"login",1,agent}
 	end
