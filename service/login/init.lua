@@ -14,7 +14,7 @@ s.client.login=function ( fd,msg,source )
 	end
 	local isok,agent = skynet.call("agentmgr","lua","reqlogin",playerid,node,gate)
 	if not isok then
-		return {"login",1,"请求agentmgr失败"}
+		return {"login",1,agent}
 	end
 	local isok = skynet.call(gate,"lua","sure_agent",fd,playerid,agent)
 	if not isok then
@@ -31,6 +31,14 @@ s.client.register=function ( fd,msg,source )
 	local gate = source
 	node=skynet.getenv("node")
 	local isok,agent,playerid = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
+	if not isok then
+		return {"register",1,agent}
+	end
+	isok=skynet.call(gate,"lua","sure_agent",fd,playerid,agent)
+	if not isok then
+		return {"register",1,"gate注册失败"}
+	end
+	skynet.error("register succeed "..playerid)
 	return {"register",0,"注册成功"}
 end
 

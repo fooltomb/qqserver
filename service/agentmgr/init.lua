@@ -51,11 +51,11 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	local res= db:query(request)
 	if not res.badresult then
 		local playerid = res.insert_id
-		print(playerid)
+		local loginok,agent = s.resp.reqlogin(source,playerid,node,gate)
+		return loginok,agent,playerid
 	else
-		print(res.err)
+		return false,"改用户名已被注册"
 	end
-	dump(res)
 end
 
 s.resp.reqlogin=function ( source,playerid,node,gate )
@@ -63,11 +63,11 @@ s.resp.reqlogin=function ( source,playerid,node,gate )
 	local mplayer = players[playerid]
 	if mplayer and mplayer.status==STATUS.LOGOUT then
 		skynet.error("reqlogin fail,at status LOGOUT "..playerid)
-		return false
+		return false,"该用户正在登出，请稍后尝试"
 	end
 	if mplayer and mplayer.status == STATUS.LOGIN then
 		skynet.error("reqlogin fail,at status LOGIN "..playerid)
-		return false
+		return false,"该用户正在其他地点登陆，请稍后尝试"
 	end
 	-- 顶替
 	if mplayer then
