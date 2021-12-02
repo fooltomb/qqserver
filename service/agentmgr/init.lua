@@ -58,7 +58,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	end
 end
 
-s.resp.reqlogin=function ( source,playername,pwd,nod,gate )
+s.resp.reqlogin=function ( source,playername,pwd,node,gate )
 	local request = string.format("select * from player where name=\'%s\'",playername)
 	local res = db:query(request)
 	if not res.badresult then
