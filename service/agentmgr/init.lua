@@ -65,10 +65,10 @@ s.resp.reqlogin=function ( source,playername,pwd,nod,gate )
 		if #res==0 then
 			return false,"没有该用户"
 		else
-			if res[0].password~=pwd then
+			if res[1].password~=pwd then
 				return false,"密码错误"
 			end
-			local playerid = res[0].id
+			local playerid = res[1].id
 			local loginok,agent = s.resp.login(source,playerid,node,gate)
 			return loginok,agent,playerid
 		end
