@@ -17,6 +17,10 @@ s.resp.client=function ( source,cmd,msg )
 	end
 end
 
+s.resp.send=function ( source,msg )
+	skynet.send(s.gate,"lua","send",s.id,msg)
+end
+
 s.init=function (  )
 	skynet.sleep(200)
 	s.data={
@@ -27,6 +31,7 @@ end
 
 s.resp.kick=function ( source )
 	skynet.error("im kicked")
+	s.leave_scene()
 	skynet.sleep(200)
 
 end

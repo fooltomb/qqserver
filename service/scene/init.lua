@@ -163,3 +163,5 @@ s.init=function ()
 		end
 	end)
 end
+
+s.start(...)
