@@ -7,7 +7,7 @@ s.snode=nil
 s.sname=nil
 
 s.client.enter=function ( msg )
-	if s.name then
+	if s.sname then
 		return {"enter",1,"already in scene"}
 	end
 	local snode,sid = random_scene()
@@ -16,8 +16,8 @@ s.client.enter=function ( msg )
 	if not isok then
 		return {"enter",1,"enter scene failed"}
 	end
-	s.node=snode
-	s.name=sname
+	s.snode=snode
+	s.sname=sname
 	return nil
 end
 
