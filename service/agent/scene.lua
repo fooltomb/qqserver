@@ -6,6 +6,23 @@ local mynode = skynet.getenv("node")
 s.snode=nil
 s.sname=nil
 
+local function random_scene()
+	local nodes = {}
+	for i,v in pairs(runconfig.scene) do
+		table.insert(nodes,i)
+		if runconfig.scene[mynode] then
+			table.insert(nodes,mynode)
+		end
+	end
+	local idx = math.random(1,#nodes)
+	local scenenode = nodes[idx]
+
+	local scenelist = runconfig.scene[scenenode]
+	local idx = math.random(1,#scenelist)
+	local sceneid = scenelist[idx]
+	return scenenode,sceneid
+end
+
 s.client.enter=function ( msg )
 	if s.sname then
 		return {"enter",1,"already in scene"}
@@ -30,22 +47,7 @@ s.client.shift=function ( msg )
 	s.call(s.snode,s.sname,"shift",s.id.x,z)
 end
 
-local function random_scene(  )
-	local nodes = {}
-	for i,v in pairs(runconfig.scene) do
-		table.insert(nodes,i)
-		if runconfig.scene[mynode] then
-			table.insert(nodes,mynode)
-		end
-	end
-	local idx = math.random(1,#nodes)
-	local scenenode = nodes[idx]
 
-	local scenelist = runconfig.scene[scenenode]
-	local idx = math.random(1,#scenelist)
-	local sceneid = scenelist[idx]
-	return scenenode,sceneid
-end
 
 s.leave_scene=function (  )
 	if not s.sname then
