@@ -15,7 +15,7 @@ s.client.login=function ( fd,msg,source )
 	end
 	local isok = skynet.call(gate,"lua","sure_agent",fd,playerid,agent)
 	if not isok then
-		return {"login",1,"gate注册失败"}
+		return {"login",1,"agent注册失败"}
 	end
 	skynet.error("login succeed "..playerid)
 

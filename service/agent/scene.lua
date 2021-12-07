@@ -1,0 +1,57 @@
+local skynet = require "skynet"
+local s = require "service"
+local runconfig = require "runconfig"
+local mynode = skynet.getenv("node")
+
+s.snode=nil
+s.sname=nil
+
+s.client.enter=function ( msg )
+	if s.name then
+		return {"enter",1,"already in scene"}
+	end
+	local snode,sid = random_scene()
+	local sname = "scene"..sid
+	local isok = s.call(snode,sname,"enter",s.id,mynode,skynet.self())
+	if not isok then
+		return {"enter",1,"enter scene failed"}
+	end
+	s.node=snode
+	s.name=sname
+	return nil
+end
+
+s.client.shift=function ( msg )
+	if not s.sname then
+		return
+	end
+	local x = msg[2] or 0
+	local z = msg[3] or 0
+	s.call(s.snode,s.sname,"shift",s.id.x,z)
+end
+
+local function random_scene(  )
+	local nodes = {}
+	for i,v in pairs(runconfig.scene) do
+		table.insert(nodes,i)
+		if runconfig.scene[mynode] then
+			table.insert(nodes,mynode)
+		end
+	end
+	local idx = math.random(1,#nodes)
+	local scenenode = nodes[idx]
+
+	local scenelist = runconfig.scene[scenenode]
+	local idx = math.random(1,#scenelist)
+	local sceneid = scenelist[idx]
+	return scenenode,sceneid
+end
+
+s.leave_scene=function (  )
+	if not s.sname then
+		return
+	end
+	s.call(s.snode,s.sname,"leave",s.id)
+	s.snode=nil
+	s.sname=nil
+end
