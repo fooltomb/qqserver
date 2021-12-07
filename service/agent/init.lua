@@ -4,6 +4,8 @@ local s = require "service"
 s.client={}
 s.gate=nil
 
+require "scene"
+
 s.resp.client=function ( source,cmd,msg )
 	s.gate=source
 	if s.client[cmd] then
