@@ -47,7 +47,7 @@ function M.call( node,srv,... )
 	end	
 end
 
-function M.send( node,src,... )
+function M.send( node,srv,... )
 	local mynode = skynet.getenv("node")
 	if node==mynode then
 		return skynet.send(srv,"lua",...)
