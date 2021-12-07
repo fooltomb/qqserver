@@ -44,7 +44,7 @@ s.client.shift=function ( msg )
 	end
 	local x = msg[2] or 0
 	local z = msg[3] or 0
-	s.call(s.snode,s.sname,"shift",s.id.x,z)
+	s.call(s.snode,s.sname,"shift",s.id,x,z)
 end
 
 
