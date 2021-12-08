@@ -40,7 +40,7 @@ local str_unpack = function ( msgstr )
 end
 
 local str_pack = function ( cmd,msg )
-	return table.concat(msg,",").."\r\n"
+	return table.concat(msg,",").."|"
 end
 
 local process_msg=function ( fd,msgstr )
@@ -69,7 +69,7 @@ end
 
 local process_buff = function ( fd,readbuff )
 	while true do
-		local msgstr,rest=string.match(readbuff,"(.-)\r\n(.*)")
+		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
 			readbuff=rest
 			process_msg(fd,msgstr)
