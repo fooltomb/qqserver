@@ -49,6 +49,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	local request = string.format("insert into player (name,password) values(\'%s\',\'%s\')",playername,pwd)
 	--print(request)
 	local res= db:query(request)
+	dump(res)
 	if not res.badresult then
 		local playerid = res.insert_id
 		local loginok,agent = s.resp.login(source,playerid,node,gate)
