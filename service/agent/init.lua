@@ -56,7 +56,7 @@ s.client.work=function ( msg )
 	s.data.coin=s.data.coin+1
 	return {"work",s.data.coin}
 end
-s.resp.client.setPlayer=function ( source )
+s.client.setPlayer=function ( source )
 	--s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=
 	skynet.call("agentmgr","lua","getPlayerInfo",s.id)
 end
