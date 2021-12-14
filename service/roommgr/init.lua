@@ -17,8 +17,8 @@ local function GetRoom( roomName )
 		if(self.count>=8) then
 			return false,{"room",1,"房间已满"}
 		end
-		self.players[playerId]="Join",
-		self.count=self.count+1,
+		self.players[playerId]="Join"
+		self.count=self.count+1
 		return true,{"room",0,self.id}
 	end
 	function m:Prepare( playerId )
