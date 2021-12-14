@@ -57,8 +57,8 @@ s.client.work=function ( msg )
 	return {"work",s.data.coin}
 end
 s.client.setPlayer=function ( source )
-	--s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=
-	skynet.call("agentmgr","lua","getPlayerInfo",s.id)
+	s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo",s.id)
+	return {"playerInfo",0,string.format("%s;%d;%d,%d,%d,%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match)}
 end
 
 s.client.CreateRoom=function ( msg )

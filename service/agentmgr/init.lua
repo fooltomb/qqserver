@@ -139,7 +139,7 @@ end
 s.resp.getPlayerInfo=function ( source,playerid )
 	local request = string.format("select * from player where id=\'%d\'",playerid)
 	local res = db:query(request)
-	dump(res)
+	return res[1].name,res[1].kill,res[1].death,res[1].win,res[1].score,res[1].match
 end
 
 s.init=function (  )
