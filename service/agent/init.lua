@@ -3,6 +3,15 @@ local s = require "service"
 
 s.client={}
 s.gate=nil
+s.aplayer={
+	name="",
+	id=0,
+	kill=0,
+	death=0,
+	win=0,
+	score=0,
+	match=0
+}
 
 require "scene"
 
@@ -24,7 +33,7 @@ s.resp.send=function ( source,msg )
 end
 
 s.init=function (  )
-	skynet.sleep(200)
+	--skynet.sleep(200)
 	s.data={
 		coin=100,
 		hp=200
@@ -46,6 +55,17 @@ s.client.work=function ( msg )
 	skynet.error("working.."..#msg)
 	s.data.coin=s.data.coin+1
 	return {"work",s.data.coin}
+end
+s.resp.client.setPlayer=function ( source )
+	s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo".s.id)
+end
+
+s.client.CreateRoom=function ( msg )
+	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
+end
+
+s.client.GetRoomList=function ( msg )
+	return skynet.call("roommgr","lua","GetRoomList",msg)
 end
 
 s.start(...)

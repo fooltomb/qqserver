@@ -49,13 +49,13 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	local request = string.format("insert into player (name,password) values(\'%s\',\'%s\')",playername,pwd)
 	--print(request)
 	local res= db:query(request)
-	dump(res)
+	--dump(res)
 	if not res.badresult then
 		local playerid = res.insert_id
 		local loginok,agent = s.resp.login(source,playerid,node,gate)
 		return loginok,agent,playerid
 	else
-		return false,"改用户名已被注册"
+		return false,"该用户名已被注册"
 	end
 end
 
@@ -134,6 +134,12 @@ s.resp.reqkick=function ( source,playerid,reason )
 	players[playerid]=nil
 	return true
 
+end
+
+s.resp.getPlayerInfo=function ( source,playerid )
+	local request = string.format("select * from player where id=\'%d\'",playerid)
+	local res = db:query(request)
+	dump(res)
 end
 
 s.init=function (  )

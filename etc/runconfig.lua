@@ -6,6 +6,7 @@ return{
 	},
 
 	agentmgr={node="node1"},
+	roommgr={node="node1"},
 	scene={
 		node1={1001,1002},
 		--node2={1003}
