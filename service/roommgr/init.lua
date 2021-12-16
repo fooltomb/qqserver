@@ -59,16 +59,21 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 	end
 	if not isok then 
 		return {"room",1,"房间数量已达上限"}
+	else
+		return {"room",0,room.id}
 	end
+	--[[
 	local joinok,ret = 1 room:Join(playerid)
 	if joinok then
 		playerRoom[playerid]=room
 		playerAgent[playerid]=agent
 	end
 	return ret
+	--]]
 end
 
 s.resp.GetRoomList=function ( source )
+	skynet.error("roomMgr Get RoomList")
 	local msg = ""
 	for k,v in pairs(rooms) do
 		msg=msg..v.id..":"..v.name..";"

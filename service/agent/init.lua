@@ -61,10 +61,11 @@ s.client.setPlayer=function ( msg )
 	return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match)}
 end
 s.client.getRooms=function ( msg )
+	skynet.error(msg)
 	return skynet.call("roommgr","lua","GetRoomList",msg)
 end
 
-s.client.CreateRoom=function ( msg )
+s.client.createRoom=function ( msg )
 	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
 end
 
