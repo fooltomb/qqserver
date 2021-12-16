@@ -70,7 +70,7 @@ s.client.createRoom=function ( msg )
 		print(k,v)
 	end
 	return {"roomList",1,"测试"}
-	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
+	--return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
 end
 
 
