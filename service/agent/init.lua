@@ -56,17 +56,17 @@ s.client.work=function ( msg )
 	s.data.coin=s.data.coin+1
 	return {"work",s.data.coin}
 end
-s.client.setPlayer=function ( source )
+s.client.setPlayer=function ( msg )
 	s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo",s.id)
 	return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match)}
+end
+s.client.getRooms=function ( msg )
+	return skynet.call("roommgr","lua","GetRoomList",msg)
 end
 
 s.client.CreateRoom=function ( msg )
 	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
 end
 
-s.client.GetRoomList=function ( msg )
-	return skynet.call("roommgr","lua","GetRoomList",msg)
-end
 
 s.start(...)
