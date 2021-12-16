@@ -41,7 +41,7 @@ skynet.start(function (  )
 		local srv = skynet.newservice("agentmgr","agentmgr",0)
 		skynet.name("agentmgr",srv)
 		local roomsrv = skynet.newservice("roommgr","roommgr",0)
-		skynet.name("roommgr",roommgr)
+		skynet.name("roommgr",roomsrv)
 
 	else
 		local proxy = cluster.proxy(anode,"agentmgr")
