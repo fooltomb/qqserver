@@ -47,7 +47,7 @@ local function GetRoom( roomName )
 end 
 
 s.resp.CreateRoom=function ( source,playerid,agent,roomName )
-	local room = GetRoom(roomName)
+	local room = GetRoom(roomName[2])
 	local isok=false
 	for i=1,100 do
 		if rooms[i]==nil then
@@ -73,7 +73,7 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 end
 
 s.resp.GetRoomList=function ( source )
-	skynet.error("roomMgr Get RoomList")
+	--skynet.error("roomMgr Get RoomList")
 	local msg = ""
 	for k,v in pairs(rooms) do
 		msg=msg..v.id..":"..v.name..";"

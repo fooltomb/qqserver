@@ -66,11 +66,7 @@ s.client.getRooms=function ( msg )
 end
 
 s.client.createRoom=function ( msg )
-	for k,v in pairs(msg) do
-		print(k,v)
-	end
-	return {"roomList",1,"测试"}
-	--return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
+	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
 end
 
 
