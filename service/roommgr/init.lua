@@ -15,11 +15,11 @@ local function GetRoom( roomName )
 	}
 	function m:Join( playerId )
 		if(self.count>=8) then
-			return false,{"room",1,"房间已满"}
+			return false,{"joinRoom",1,"房间已满"}
 		end
 		self.players[playerId]="Join"
 		self.count=self.count+1
-		return true,{"room",0,self.id}
+		return true,{"joinRoom",0,self.id..":"..self.name}
 	end
 	function m:Prepare( playerId )
 		self.players[playerId]="Ready"
@@ -63,20 +63,18 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 		return {"room",0,room.id}
 	end
 	--[[
-	local joinok,ret = 1 room:Join(playerid)
+
+	--]]
+end
+
+s.resp.JoinRoom=function ( source,playerId,roomid,agent )
+	local room = rooms[roomid]
+	local joinok,ret = room:Join(playerid)
 	if joinok then
 		playerRoom[playerid]=room
 		playerAgent[playerid]=agent
 	end
 	return ret
-	--]]
-end
-
-s.resp.JoinRoom=function ( source,playerId,roomid )
-	for k,v in pairs(source) do
-		print(k,v)
-	end
-	return {"joinRoom",1,"joinRoomTest"}
 end
 
 s.resp.GetRoomList=function ( source )

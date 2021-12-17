@@ -70,7 +70,7 @@ s.client.createRoom=function ( msg )
 end
 
 s.client.joinRoom=function ( msg )
-	return skynet.call("roommgr","lua","JoinRoom",s.id,msg[2])
+	return skynet.call("roommgr","lua","JoinRoom",s.id,msg[2],skynet.self())
 end
 
 s.start(...)
