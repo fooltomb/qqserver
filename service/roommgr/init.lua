@@ -72,6 +72,13 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 	--]]
 end
 
+s.resp.JoinRoom=function ( source,playerId,roomid )
+	for k,v in pairs(source) do
+		print(k,v)
+	end
+	return {"joinRoom",1,"joinRoomTest"}
+end
+
 s.resp.GetRoomList=function ( source )
 	--skynet.error("roomMgr Get RoomList")
 	local msg = ""

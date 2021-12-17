@@ -12,7 +12,7 @@ skynet.start(function (  )
 	skynet.name("nodemgr",nodemgr)
 	--集群
 	cluster.reload(runconfig.cluster)
-	--cluster.open(mynode)
+	cluster.open(mynode)
 
 	skynet.error("[start main]")
 	--[[gateway
