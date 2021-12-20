@@ -69,10 +69,10 @@ end
 
 s.resp.JoinRoom=function ( source,playerId,roomid,agent )
 	local room = rooms[tonumber(roomid)]
-	local joinok,ret = room:Join(playerid)
+	local joinok,ret = room:Join(playerId)
 	if joinok then
-		playerRoom[playerid]=room
-		playerAgent[playerid]=agent
+		playerRoom[playerId]=room
+		playerAgent[playerId]=agent
 	end
 	return ret
 end
