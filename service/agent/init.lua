@@ -70,6 +70,7 @@ s.client.createRoom=function ( msg )
 end
 
 s.client.joinRoom=function ( msg )
+	skynet.error("s.id is:"..s.id)
 	return skynet.call("roommgr","lua","JoinRoom",s.id,msg[2],skynet.self())
 end
 
