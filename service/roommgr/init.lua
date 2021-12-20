@@ -68,7 +68,7 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 end
 
 s.resp.JoinRoom=function ( source,playerId,roomid,agent )
-	local room = rooms[roomid]
+	local room = rooms[tonumber(roomid)]
 	local joinok,ret = room:Join(playerid)
 	if joinok then
 		playerRoom[playerid]=room
