@@ -66,12 +66,12 @@ s.client.getRooms=function ( msg )
 end
 
 s.client.createRoom=function ( msg )
-	return skynet.call("roommgr","lua","CreateRoom",s.id,skynet.self(),msg)
+	return skynet.call("roommgr","lua","CreateRoom",msg[2])
 end
 
 s.client.joinRoom=function ( msg )
-	skynet.error("s.id is:"..s.id)
-	return skynet.call("roommgr","lua","JoinRoom",s.id,msg[2],skynet.self())
+	--skynet.error("s.id is:"..s.id)
+	return skynet.call("roommgr","lua","JoinRoom",s.aplayer.name,msg[2],skynet.self())
 end
 
 s.start(...)

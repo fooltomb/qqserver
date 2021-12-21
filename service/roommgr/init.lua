@@ -2,8 +2,8 @@ local skynet = require "skynet"
 local s = require "service"
 
 local rooms = {}--[roomid]=room
-local playerRoom = {} --[playerId]=room
-local playerAgent = {} --[playerId]=agent
+local playerRoom = {} --[playerName]=room
+local playerAgent = {} --[playerName]=agent
 
 local function GetRoom( roomName )
 	local m = {
@@ -13,16 +13,16 @@ local function GetRoom( roomName )
 		players={},
 		status="ready"
 	}
-	function m:Join( playerId )
+	function m:Join( playerName )
 		if(self.count>=8) then
 			return false,{"joinRoom",1,"房间已满"}
 		end
-		self.players[playerId]="Join"
+		self.players[playerName]="Join"
 		self.count=self.count+1
 		return true,{"joinRoom",0,self.id..":"..self.name}
 	end
-	function m:Prepare( playerId )
-		self.players[playerId]="Ready"
+	function m:Prepare( playerName )
+		self.players[playerName]="Ready"
 		local readyCount = 0
 		for k,v in pairs(self.players) do
 			if(v=="Ready") then
@@ -33,11 +33,11 @@ local function GetRoom( roomName )
 			--to do 
 		end
 	end
-	function m:CancelPrepare( playerId )
-		self.players[playerId]="Join"
+	function m:CancelPrepare( playerName )
+		self.players[playerName]="Join"
 	end
-	function m:Exit( playerId )
-		self.players[playerId]=nil
+	function m:Exit( playerName )
+		self.players[playerName]=nil
 		self.count=self.count-1
 		if self.count<=0 then
 			--kill room
@@ -46,8 +46,8 @@ local function GetRoom( roomName )
 	return m
 end 
 
-s.resp.CreateRoom=function ( source,playerid,agent,roomName )
-	local room = GetRoom(roomName[2])
+s.resp.CreateRoom=function ( source,roomName )
+	local room = GetRoom(roomName)
 	local isok=false
 	for i=1,100 do
 		if rooms[i]==nil then
@@ -67,16 +67,32 @@ s.resp.CreateRoom=function ( source,playerid,agent,roomName )
 	--]]
 end
 
-s.resp.JoinRoom=function ( source,playerId,roomid,agent )
+s.resp.JoinRoom=function ( source,playerName,roomid,agent )
 	local room = rooms[tonumber(roomid)]
-	local joinok,ret = room:Join(playerId)
+	local joinok,ret = room:Join(playerName)
 	if joinok then
-		playerRoom[playerId]=room
-		playerAgent[playerId]=agent
+		playerRoom[playerName]=room
+		playerAgent[playerName]=agent
+	end
+	local playerState = ""
+	for k,v in pairs(room.players) do
+		playerState=playerState..k..":"..v..";"
+	end
+	for k,v in pairs(room.players) do
+		skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
 	end
 	return ret
 end
-
+--[[
+s.resp.GetRoomPlayer=function ( source,roomid )
+	local room = rooms[tonumber(roomid)]
+	local ret = ""
+	for k,v in pairs(room.players) do
+		ret=ret..k..":"..v..";"
+	end
+	return {"roomPlayer",0,ret}
+end
+]]
 s.resp.GetRoomList=function ( source )
 	--skynet.error("roomMgr Get RoomList")
 	local msg = ""
