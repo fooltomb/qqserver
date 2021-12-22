@@ -76,7 +76,7 @@ s.client.joinRoom=function ( msg )
 end
 
 s.client.prepareGame=function ( msg )
-	skynet.send("roommgr","lua","PrePare",s.aplayer.name)
+	skynet.send("roommgr","lua","Prepare",s.aplayer.name)
 end
 
 s.start(...)
