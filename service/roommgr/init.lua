@@ -10,6 +10,7 @@ local function GetRoom( roomName )
 		id=0,
 		name=roomName,
 		count=0,
+		readyCount=0,
 		players={},
 		status="ready"
 	}
@@ -23,25 +24,25 @@ local function GetRoom( roomName )
 	end
 	function m:Prepare( playerName )
 		self.players[playerName]="Ready"
-		local readyCount = 0
-		for k,v in pairs(self.players) do
-			if(v=="Ready") then
-				readyCount=readyCount+1
-			end
-		end
-		if readyCount==self.count then
+		self.readyCount=self.readyCount+1
+		if self.readyCount==self.count then
 			--to do 
 		end
+		return false
 	end
 	function m:CancelPrepare( playerName )
 		self.players[playerName]="Join"
 	end
 	function m:Exit( playerName )
+		if(self.players[playerName]=="Ready") then
+			self.readyCount=self.readyCount-1
+		end
 		self.players[playerName]=nil
 		self.count=self.count-1
 		if self.count<=0 then
 			--kill room
 		end
+		return false
 	end
 	return m
 end 
@@ -83,16 +84,40 @@ s.resp.JoinRoom=function ( source,playerName,roomid,agent )
 	end
 	return ret
 end
---[[
-s.resp.GetRoomPlayer=function ( source,roomid )
-	local room = rooms[tonumber(roomid)]
-	local ret = ""
-	for k,v in pairs(room.players) do
-		ret=ret..k..":"..v..";"
+
+s.resp.Prepare=function ( source,playerName )
+	local room = playerRoom[playerName]
+	local isok=room:Prepare(playerName)
+	if not isok then
+		local playerState = ""
+		for k,v in pairs(room.players) do
+			playerState=playerState..k..":"..v..";"
+		end
+		for k,v in pairs(room.players) do
+			skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
+		end
 	end
-	return {"roomPlayer",0,ret}
 end
-]]
+
+s.resp.Exit=function ( source,playerName )
+	local room = playerRoom[playerName]
+	if(room==nil) then
+		return
+	end
+	local isok = room:Exit(playerName)
+	if not isok then
+		local playerState = ""
+		for k,v in pairs(room.players) do
+			playerState=playerState..k..":"..v..";"
+		end
+		for k,v in pairs(room.players) do
+			skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
+		end
+	end
+	playerRoom[playerName]=nil
+	playerAgent[playerName]=nil
+end
+
 s.resp.GetRoomList=function ( source )
 	--skynet.error("roomMgr Get RoomList")
 	local msg = ""

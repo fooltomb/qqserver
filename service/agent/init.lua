@@ -42,6 +42,7 @@ end
 
 s.resp.kick=function ( source )
 	skynet.error("im kicked")
+	skynet.send("roommgr","lua","Exit",s.aplayer.name)
 	s.leave_scene()
 	skynet.sleep(200)
 
@@ -72,6 +73,10 @@ end
 s.client.joinRoom=function ( msg )
 	--skynet.error("s.id is:"..s.id)
 	return skynet.call("roommgr","lua","JoinRoom",s.aplayer.name,msg[2],skynet.self())
+end
+
+s.client.prepareGame=function ( msg )
+	skynet.send("roommgr","lua","PrePare",s.aplayer.name)
 end
 
 s.start(...)
