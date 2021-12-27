@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local s = require "service"
+local mynode = skynet.getenv("node")
 
 s.client={}
 s.gate=nil
@@ -46,6 +47,10 @@ s.resp.kick=function ( source )
 	s.leave_scene()
 	skynet.sleep(200)
 
+end
+
+s.resp.getNode=function ( source )
+	return mynode
 end
 
 s.resp.exit=function ( source )

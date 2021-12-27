@@ -26,13 +26,12 @@ local function GetRoom( roomName )
 		self.players[playerName]="Ready"
 		self.readyCount=self.readyCount+1
 		if self.readyCount==self.count then
-			--to do 
+			return true --玩家全部就绪可以开始游戏
+		else
+			return false
 		end
-		return false
 	end
-	function m:CancelPrepare( playerName )
-		self.players[playerName]="Join"
-	end
+
 	function m:Exit( playerName )
 		if(self.players[playerName]=="Ready") then
 			self.readyCount=self.readyCount-1
@@ -40,9 +39,10 @@ local function GetRoom( roomName )
 		self.players[playerName]=nil
 		self.count=self.count-1
 		if self.count<=0 then
-			--kill room
+			return true,self.id --玩家全部离开可以销毁房间
+		else
+			return false,self.id
 		end
-		return false
 	end
 	return m
 end 
@@ -96,6 +96,27 @@ s.resp.Prepare=function ( source,playerName )
 		for k,v in pairs(room.players) do
 			skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
 		end
+	else
+		local nodes = {}
+		local maxNode = ""
+		for k,v in pairs(rooms.players) do
+			local node = skynet.call(playerAgent[k],"lua","getNode")
+			if(nodes[node]==nil) then
+				nodes[node]=1
+			else
+				nodes[node]=nodes[node]+1
+			end
+			if maxNode=="" then
+				maxNode=node
+			else
+				if nodes[node]>nodes[maxNode] then
+					maxNode=node
+				end
+			end
+		end
+		s.call(maxNode,"scenemgr","lua","createScene")
+		--通过scenemgr新建一个scene.返回sceneNode和sceneName
+		--给agent广播让他们加入scene
 	end
 end
 
@@ -104,7 +125,7 @@ s.resp.Exit=function ( source,playerName )
 	if(room==nil) then
 		return
 	end
-	local isok = room:Exit(playerName)
+	local isok,roomid = room:Exit(playerName)
 	if not isok then
 		local playerState = ""
 		for k,v in pairs(room.players) do
@@ -113,6 +134,8 @@ s.resp.Exit=function ( source,playerName )
 		for k,v in pairs(room.players) do
 			skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
 		end
+	else
+		rooms[roomid]=nil
 	end
 	playerRoom[playerName]=nil
 	playerAgent[playerName]=nil

@@ -30,24 +30,26 @@ skynet.start(function (  )
 		local srv = skynet.newservice("login","login",i)
 		skynet.name("login"..i,srv)
 	end
-	--scene
+
+	local scenesrv = skynet.newservice("scenemgr","scenemgr",0)
+	skynet.name("scenemgr",scenesrv)
+--[[
 	for _,sid in pairs(runconfig.scene[mynode] or {}) do
 		local srv = skynet.newservice("scene","scene",sid)
 		skynet.name("scene"..sid,srv)
 	end
-
+]]
 	local anode = runconfig.agentmgr.node
 	if mynode==anode then
 		local srv = skynet.newservice("agentmgr","agentmgr",0)
 		skynet.name("agentmgr",srv)
 		local roomsrv = skynet.newservice("roommgr","roommgr",0)
 		skynet.name("roommgr",roomsrv)
-
 	else
 		local proxy = cluster.proxy(anode,"agentmgr")
 		skynet.name("agentmgr",proxy)
 		local roomproxy = cluster.proxy(anode,"roommgr")
-		skynet.name("roommgr",proxy)
+		skynet.name("roommgr",roomproxy)
 	end
 
 
