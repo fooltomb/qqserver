@@ -99,7 +99,7 @@ s.resp.Prepare=function ( source,playerName )
 	else
 		local nodes = {}
 		local maxNode = ""
-		for k,v in pairs(rooms.players) do
+		for k,v in pairs(room.players) do
 			local node = skynet.call(playerAgent[k],"lua","getNode")
 			if(nodes[node]==nil) then
 				nodes[node]=1
