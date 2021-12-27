@@ -114,6 +114,7 @@ s.resp.Prepare=function ( source,playerName )
 				end
 			end
 		end
+		skynet.error(maxNode)
 		s.call(maxNode,"scenemgr","lua","createScene")
 		--通过scenemgr新建一个scene.返回sceneNode和sceneName
 		--给agent广播让他们加入scene
