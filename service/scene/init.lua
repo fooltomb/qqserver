@@ -2,14 +2,19 @@ local skynet = require "skynet"
 local s = require "service"
 
 local balls={}--[playerid]=ball
+local playerCount = 0 --玩家数量
+local playerIndex = 0 --玩家加入顺序
 
-function ball(  )
+local randomX = {}
+local randomZ = {}
+
+function ball(  )--每个玩家控制一个ball
 	local m = {
 		playerid=nil,
 		node=nil,
 		agent=nil,
-		x=math.random(0,100),
-		z=math.random(0,100),
+		x=0,
+		z=0,
 		size=2,
 		speedx=0,
 		speedz=0
@@ -57,25 +62,34 @@ function broadcast( msg )
 	end
 end
 
+s.resp.setPlayerCount=function ( source,count )
+	playerCount=count
+end
+
 s.resp.enter=function ( source,playerid,node,agent )
 	if balls[playerid] then
 		return false
 	end
+	playerIndex=playerIndex+1
 	local b = ball()
+	b.x=randomX[playerIndex]
+	b.z=randomZ[playerIndex]
 	b.playerid=playerid
 	b.node=node
 	b.agent=agent
 	--
-	local entermsg = {"enter",playerid,b.x,b.z,b.size}
-	broadcast(entermsg)
-	--
+	local entermsg = {"joinGame",0,playerid,b.x,b.z,b.size}
 	balls[playerid]=b
-	--
+	broadcast(entermsg)
+	
+--[[
+	
 	local ret_msg = {"enter",0,"进入成功"}
 	s.send(b.node,b.agent,"send",ret_msg)
 	s.send(b.node,b.agent,"send",balllist_msg())
 	s.send(b.node,b.agent,"send",foodlist_msg())
 	return true
+]]
 end
 
 s.resp.leave=function ( source,playerid )
@@ -144,6 +158,18 @@ function eat_update()
 end
 
 s.init=function ()
+	math.randomseed(os.time())
+	for i=0,96,4 do
+		table.insert(randomX,i)
+		table.insert(randomZ,i)
+	end
+	for i=25,1,-1 do
+		local index = math.random(1,i)
+		randomX[index],randomX[i]=randomX[i],randomX[index]
+		index=math.random(1,i)
+		randomZ[index],randomZ[i]=randomZ[i],randomZ[index]
+	end
+	
 	skynet.fork(function ()
 		--
 		local stime = skynet.now()
