@@ -63,6 +63,7 @@ function broadcast( msg )
 end
 
 s.resp.setPlayerCount=function ( source,count )
+	skynet.error("The scene player count is "..count)
 	playerCount=count
 end
 
@@ -78,7 +79,7 @@ s.resp.enter=function ( source,playerid,node,agent )
 	b.node=node
 	b.agent=agent
 	--
-	local entermsg = {"joinGame",0,playerid,b.x,b.z,b.size}
+	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z}
 	balls[playerid]=b
 	broadcast(entermsg)
 	
