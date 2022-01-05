@@ -56,6 +56,30 @@ local function foodlist_msg(  )
 	return msg
 end 
 
+local walls = {}--[id]=wall
+local wall_count = 0
+
+function wall( index )
+	if walls[index]~=nil then
+		return walls[index]
+	end
+	local m = {
+		id=nil,
+		rotateY=math.random(0,1),
+		x=randomX[index],
+		z=randomZ[index]
+	}
+	return m
+end
+
+local function walllist_msg(  )
+	msg = ""
+	for i,v in pairs(walls) do
+		msg=msg..string.format("%d:%d:%d:%d;",i,v.rotateY,v.x,v.z)
+	end
+	return {"walllist",0,msg}
+end
+
 function broadcast( msg )
 	for i,v in pairs(balls) do
 		s.send(v.node,v.agent,"send",msg)
@@ -80,6 +104,7 @@ s.resp.enter=function ( source,playerid,node,agent )
 	b.agent=agent
 	--
 	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z}
+	s.send(b.node,b.agent,"send",walllist_msg())
 	balls[playerid]=b
 	broadcast(entermsg)
 	
@@ -169,6 +194,9 @@ s.init=function ()
 		randomX[index],randomX[i]=randomX[i],randomX[index]
 		index=math.random(1,i)
 		randomZ[index],randomZ[i]=randomZ[i],randomZ[index]
+	end
+	for i=1,25,1 do
+		walls[i]=wall(i)
 	end
 	
 	skynet.fork(function ()
