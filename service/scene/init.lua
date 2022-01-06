@@ -107,6 +107,29 @@ s.resp.enter=function ( source,playerid,node,agent )
 	s.send(b.node,b.agent,"send",walllist_msg())
 	balls[playerid]=b
 	broadcast(entermsg)
+
+	if(playerIndex==playerCount) then
+		skynet.sleep(300)
+		broadcast({"startGame",0,0})
+		skynet.fork(function ()
+		--
+			local stime = skynet.now()
+			local frame = 0
+			while true do
+				frame = frame + 1
+				local isok,err = pcall(update,frame)
+				if not isok then
+					skynet.error(err)
+				end
+				local etime = skynet.now()
+				local waittime = frame*20 - (etime-stime)
+				if waittime<=0 then
+					waittime=2
+				end
+				skynet.sleep(waittime)
+			end
+		end)
+	end
 	
 --[[
 	
@@ -157,7 +180,7 @@ function food_update()
 	if food_count > 50 then
 		return
 	end
-	if math.random(1,100)<98 then
+	if math.random(1,100)<95 then
 		return
 	end
 	food_maxid=food_maxid+1
@@ -165,7 +188,7 @@ function food_update()
 	local f = food()
 	f.id=food_maxid
 	foods[f.id]=f
-	local msg={"addfood",f.id,f.x,f.z}
+	local msg={"addfood",0,string.format("%d;%d;%d",f.id,f.x,f.z)}
 	broadcast(msg)
 end
 
@@ -199,24 +222,7 @@ s.init=function ()
 		walls[i]=wall(i)
 	end
 	
-	skynet.fork(function ()
-		--
-		local stime = skynet.now()
-		local frame = 0
-		while true do
-			frame = frame + 1
-			local isok,err = pcall(update,frame)
-			if not isok then
-				skynet.error(err)
-			end
-			local etime = skynet.now()
-			local waittime = frame*20 - (etime-stime)
-			if waittime<=0 then
-				waittime=2
-			end
-			skynet.sleep(waittime)
-		end
-	end)
+
 end
 
 s.start(...)
