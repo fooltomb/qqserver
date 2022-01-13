@@ -103,7 +103,7 @@ s.resp.enter=function ( source,playerid,node,agent )
 	b.node=node
 	b.agent=agent
 	--
-	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z}
+	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z..";0"}
 	s.send(b.node,b.agent,"send",walllist_msg())
 	balls[playerid]=b
 	broadcast(entermsg)
@@ -150,19 +150,19 @@ s.resp.leave=function ( source,playerid )
 	broadcast(leavemsg)
 end
 
-s.resp.shift=function ( source,playerid,x,z )
+s.resp.shift=function ( source,playerid,x,z,rotY )
 	local b = balls[playerid]
 	if not b then
 		return false
 	end
-	b.speedx=x
-	b.speedz=z
+	local shiftmsg = {"shift",0,string.format("%d;%s;%s;%s",playerid,x,z,rotY)}
+	broadcast(shiftmsg)
 end
 
 function update( frame )
 	food_update()
-	move_update()
-	eat_update()
+	--move_update()
+	--eat_update()
 end
 
 function move_update()
