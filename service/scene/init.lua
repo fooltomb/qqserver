@@ -168,8 +168,8 @@ end
 function move_update()
 	local msg = ""
 	for i,v in pairs(balls) do
-		skynet.error(v.x)
-		msg=string.format("%s:%d:%f:%f:%f;",msg,v.id,v.x,v.z,v.rotY)
+		--skynet.error(v.x)
+		msg=msg..string.format("%d:%f:%f:%f;",i,v.x,v.z,v.rotY)
 	end
 	broadcast({"shift",0,msg})
 end
