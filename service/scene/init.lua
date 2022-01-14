@@ -15,9 +15,8 @@ function ball(  )--每个玩家控制一个ball
 		agent=nil,
 		x=0,
 		z=0,
-		size=2,
-		speedx=0,
-		speedz=0
+		health=0,
+		rotY=0
 	}
 	return m
 end
@@ -103,7 +102,7 @@ s.resp.enter=function ( source,playerid,node,agent )
 	b.node=node
 	b.agent=agent
 	--
-	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z..";0"}
+	local entermsg = {"joinGame",0,playerid..";"..b.x..";"..b.z..";"..b.rotY}
 	s.send(b.node,b.agent,"send",walllist_msg())
 	balls[playerid]=b
 	broadcast(entermsg)
@@ -155,25 +154,23 @@ s.resp.shift=function ( source,playerid,x,z,rotY )
 	if not b then
 		return false
 	end
-	local shiftmsg = {"shift",0,string.format("%d;%s;%s;%s",playerid,x,z,rotY)}
-	broadcast(shiftmsg)
+	b.x=x
+	b.z=z
+	b.rotY=rotY
 end
 
 function update( frame )
 	food_update()
-	--move_update()
+	move_update()
 	--eat_update()
 end
 
 function move_update()
+	local msg = ""
 	for i,v in pairs(balls) do
-		v.x=v.x+v.speedx*0.2
-		v.z=v.z+v.speedz*0.2
-		if v.speedx ~=0 or v.speedz~=0 then
-			local msg = {"move",v.playerid,v.x,v.z}
-			broadcast(msg)
-		end
+		msg=string.format("%s:%d:%f:%f:%f;",msg,v.id,v.x,v.z,v.rotY)
 	end
+	broadcast({"shift",0,msg})
 end
 
 function food_update()
