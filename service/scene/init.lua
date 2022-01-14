@@ -121,11 +121,10 @@ s.resp.enter=function ( source,playerid,node,agent )
 					skynet.error(err)
 				end
 				local etime = skynet.now()
-				local waittime = frame*20 - (etime-stime)
-				if waittime<=0 then
-					waittime=2
-				end
-				skynet.sleep(waittime)
+				local waittime = frame*2 - (etime-stime)
+				if waittime>0 then					
+					skynet.sleep(waittime)
+				end				
 			end
 		end)
 	end
