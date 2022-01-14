@@ -64,7 +64,7 @@ s.client.work=function ( msg )
 end
 s.client.setPlayer=function ( msg )
 	s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo",s.id)
-	return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match)}
+	return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match,s.id)}
 end
 s.client.getRooms=function ( msg )
 	--skynet.error(msg)
