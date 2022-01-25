@@ -44,6 +44,13 @@ s.client.shift=function ( msg )
 	s.call(s.snode,s.sname,"shift",s.id,x,z,roty)
 end
 
+s.client.eat=function ( msg )
+	if not s.sname then
+		return
+	end
+	local foodid = msg[2]
+	s.call(s.snode,s.sname,"eat",s.id,foodid)
+end
 
 
 s.leave_scene=function (  )

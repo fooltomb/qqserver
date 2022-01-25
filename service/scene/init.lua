@@ -158,6 +158,17 @@ s.resp.shift=function ( source,playerid,x,z,rotY )
 	b.rotY=rotY
 end
 
+s.resp.eat=function ( source,playerid,foodid )
+	-- body
+	if(foods[foodid]~=nil) then
+		foods[foodid]=nil
+		food_count=food_count-1
+		balls[playerid].health=balls[playerid].health+1
+		local eatmsg={"eat",0,playerid..";"..foodid}
+		broadcast(eatmsg)
+	end
+end
+
 function update( frame )
 	food_update()
 	move_update()
