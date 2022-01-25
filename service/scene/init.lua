@@ -159,9 +159,10 @@ s.resp.shift=function ( source,playerid,x,z,rotY )
 end
 
 s.resp.eat=function ( source,playerid,foodid )
-	skynet.error("p"..playerid.."f:"..foodid)
-	if(foods[foodid]~=nil) then
-		foods[foodid]=nil
+	--skynet.error("p:"..playerid.."  f:"..foodid)
+	local fid = tonumber(foodid)
+	if(foods[fid]~=nil) then
+		foods[fid]=nil
 		food_count=food_count-1
 		balls[playerid].health=balls[playerid].health+1
 		local eatmsg={"eat",0,playerid..";"..foodid}
