@@ -45,8 +45,9 @@ end
 
 local process_msg=function ( fd,msgstr )
 	local cmd,msg = str_unpack(msgstr)
-	skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
-
+	if(cmd~="shift") then
+		skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
+	end
 	local conn=conns[fd]
 	local playerID = conn.playerID
 	if not playerID then
@@ -141,7 +142,9 @@ s.resp.send_by_fd=function ( source,fd,msg )
 	end
 
 	local buff = str_pack(msg[1],msg)
-	skynet.error("send "..fd.." ["..msg[1].."] {"..table.concat(msg,",").."}")
+	if(msg[1]~="shift") then
+		skynet.error("send "..fd.." ["..msg[1].."] {"..table.concat(msg,",").."}")
+	end
 	socket.write(fd,buff)
 end
 
