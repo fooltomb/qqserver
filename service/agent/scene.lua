@@ -45,6 +45,7 @@ s.client.shift=function ( msg )
 end
 
 s.client.eat=function ( msg )
+	skynet.error(msg)
 	if not s.sname then
 		return
 	end

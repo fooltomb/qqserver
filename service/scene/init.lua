@@ -159,7 +159,7 @@ s.resp.shift=function ( source,playerid,x,z,rotY )
 end
 
 s.resp.eat=function ( source,playerid,foodid )
-	-- body
+	skynet.error("p"..playerid.."f:"..foodid)
 	if(foods[foodid]~=nil) then
 		foods[foodid]=nil
 		food_count=food_count-1
