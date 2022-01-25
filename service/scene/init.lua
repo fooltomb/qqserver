@@ -188,7 +188,7 @@ function food_update()
 	if food_count > 50 then
 		return
 	end
-	if math.random(1,100)<95 then
+	if math.random(1,1000)<990 then
 		return
 	end
 	food_maxid=food_maxid+1
