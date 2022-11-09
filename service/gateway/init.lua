@@ -76,8 +76,8 @@ local process_buff = function ( fd,readbuff )
 		if msgstr then
 			readbuff=rest
 			--process_msg(fd,msgstr)
-			skynet.error("msgstr"..msgstr)
-			skynet.error("rest"..rest)
+			skynet.error("msgstr:"..msgstr)
+			skynet.error("rest:"..rest)
 		else
 			return readbuff
 		end
@@ -107,6 +107,7 @@ local recv_loop = function ( fd )
 	local readbuff = ""
 	while true do
 		local recvstr = socket.read(fd)
+		skynet.error(type(recvstr))
 		if recvstr then
 			readbuff=readbuff..recvstr
 			readbuff=process_buff(fd,readbuff)
