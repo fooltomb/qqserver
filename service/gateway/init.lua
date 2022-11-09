@@ -71,13 +71,13 @@ end
 local process_buff = function ( fd,readbuff )
 
 	while true do
-		skynet.error(readbuff)
+		skynet.error("readbuff:"..string.upper(readbuff))
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
 			readbuff=rest
 			--process_msg(fd,msgstr)
-			skynet.error(msgstr)
-			skynet.error(rest)
+			skynet.error("msgstr"..msgstr)
+			skynet.error("rest"..rest)
 		else
 			return readbuff
 		end
