@@ -73,7 +73,9 @@ local process_buff = function ( fd,readbuff )
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
 			readbuff=rest
-			process_msg(fd,msgstr)
+			--process_msg(fd,msgstr)
+			skynet.error(msgstr)
+			skynet.error(rest)
 		else
 			return readbuff
 		end

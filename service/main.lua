@@ -6,7 +6,6 @@ local cluster = require "skynet.cluster"
 skynet.start(function (  )
 	--初始化
 	local mynode = skynet.getenv("node")
-	skynet.error(mynode)
 	local nodecfg = runconfig[mynode]
 	--节点管理
 	local nodemgr = skynet.newservice("nodemgr","nodemgr",0)
