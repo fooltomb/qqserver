@@ -117,7 +117,7 @@ local process_connect = function ( fd,addr )
 	local c = conn()
 	conns[fd]=c
 	c.fd=fd
-	socketdriver.start(fd)
+	--socketdriver.start(fd)
 end
 --关闭连接
 local process_close=function ( fd )
