@@ -16,6 +16,7 @@ skynet.start(function (  )
 	--]]
 
 	skynet.error("[start main]")
+	skynet.error(skynet.PTYPE_SOCKET)
 	--[[gateway
 	for i,v in pairs(nodecfg.gateway or {}) do
 		local srv = skynet.newservice("gateway","gateway",i)
