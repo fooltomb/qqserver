@@ -180,19 +180,18 @@ function socket_dispatch ( _,_,q,type,... )
     end
 end
 
-function s.init(  )
+function s.init( )
 	skynet.error("[start]"..s.name.." "..s.id)
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
      --注册SOCKET类型消息
-    skynet.register_protocol{
-         name = "socket",
-         id = skynet.PTYPE_SOCKET,
-         unpack = socket_unpack,
-         dispatch = socket_dispatch
+    skynet.register_protocol={
+        name = "socket",
+        id = skynet.PTYPE_SOCKET,
+        unpack = socket_unpack,
+        dispatch = socket_dispatch
     }
-     --注册Lua类型消息（skynet.dispatch 略）
      --开启监听
     local listenfd = socketdriver.listen("0.0.0.0", port)
     skynet.error("listen socket :","0.0.0.0",port)
