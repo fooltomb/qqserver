@@ -186,12 +186,12 @@ function s.init( )
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
      --注册SOCKET类型消息
-    skynet.register_protocol({
+    skynet.register_protocol{
         name = "socket",
         id = skynet.PTYPE_SOCKET,
         unpack = socket_unpack,
         dispatch = socket_dispatch
-    })
+    }
      --开启监听
     local listenfd = socketdriver.listen("0.0.0.0", port)
     skynet.error("listen socket :","0.0.0.0",port)
