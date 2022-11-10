@@ -190,7 +190,7 @@ function s.init(  )
          name = "socket",
          id = skynet.PTYPE_SOCKET,
          unpack = socket_unpack,
-         dispatch = socket_dispatch,
+         dispatch = socket_dispatch
     })
      --注册Lua类型消息（skynet.dispatch 略）
      --开启监听
