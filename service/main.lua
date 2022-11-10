@@ -10,19 +10,20 @@ skynet.start(function (  )
 	--节点管理
 	local nodemgr = skynet.newservice("nodemgr","nodemgr",0)
 	skynet.name("nodemgr",nodemgr)
-	--[[集群
+	--集群
 	cluster.reload(runconfig.cluster)
 	cluster.open(mynode)
 	--]]
 
 	skynet.error("[start main]")
 	--[[gateway
-
 	for i,v in pairs(nodecfg.gateway or {}) do
 		local srv = skynet.newservice("gateway","gateway",i)
 		skynet.name("gateway"..i,srv)
 	end
 	--]]
+
+
 	local srv=skynet.newservice("gateway","gateway",1)
 	skynet.name("gateway1",srv)
 
