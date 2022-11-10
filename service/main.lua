@@ -16,7 +16,7 @@ skynet.start(function (  )
 	--]]
 
 	skynet.error("[start main]")
-	skynet.error(#(skynet.proto))
+	skynet.error(#(proto))
 	for i,v in skynet.proto do
 		skynet.error("key:"..i.."|value:"..v)
 	end
