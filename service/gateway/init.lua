@@ -1,7 +1,11 @@
 local skynet = require "skynet"
+
 local s = require "service"
 local socket = require "skynet.socket"
 local runconfig = require "runconfig"
+
+local socketdriver = require "skynet.socketdriver"
+local netpack = require "skynet.netpack"
 
 conns={}--[fd]=conn
 players={}--[playerID]=gatePlayer
@@ -84,7 +88,39 @@ local process_buff = function ( fd,readbuff )
 	end
 end
 
-local disconnect=function ( fd )
+
+
+local recv_loop = function ( fd )
+	socket.start(fd)
+	skynet.error("socket connected "..fd)
+	local readbuff = ""
+	while true do
+		local recvstr = socket.read(fd)
+		if recvstr then
+			readbuff=readbuff..recvstr
+			readbuff=process_buff(fd,readbuff)
+		else
+			skynet.error("socket close "..fd)
+			disconnect(fd)
+			socket.close(fd)
+			return
+		end
+	end
+end
+
+
+
+local queue
+--有新的链接
+local process_connect = function ( fd,addr )
+	skynet.error("new connect form "..addr.." "..fd)
+	local c = conn()
+	conns[fd]=c
+	c.fd=fd
+	socketdriver.start(fd)
+end
+--关闭连接
+local process_close=function ( fd )
 	local c = conns[fd]
 	if not c then
 		return
@@ -100,32 +136,48 @@ local disconnect=function ( fd )
 		skynet.call("agentmgr","lua","reqkick",playerid,reason)
 	end
 end
-
-local recv_loop = function ( fd )
-	socket.start(fd)
-	skynet.error("socket connected "..fd)
-	local readbuff = ""
-	while true do
-		local recvstr = socket.read(fd)
-		skynet.error(type(recvstr))
-		if recvstr then
-			readbuff=readbuff..recvstr
-			readbuff=process_buff(fd,readbuff)
-		else
-			skynet.error("socket close "..fd)
-			disconnect(fd)
-			socket.close(fd)
-			return
-		end
-	end
+--发生错误
+local process_error=function (fd, error)
+    skynet.error("error fd:"..fd.." error:"..error)
+end
+--发生警告
+local process_warning = function ( fd,size )
+	skynet.error("warning fd:"..fd.." size:"..size)
 end
 
-local connect = function ( fd,addr )
-	--print("connect form "..addr.." "..fd)
-	local c = conn()
-	conns[fd]=c
-	c.fd=fd
-	skynet.fork(recv_loop,fd)
+--处理消息
+function process_msg(fd, msg, sz)
+    local str = netpack.tostring(msg,sz)
+    skynet.error("recv from fd:"..fd .." str:"..str)
+end
+
+--收到多于1条消息时
+function process_more()
+    for fd, msg, sz in netpack.pop, queue do
+         skynet.fork(process_msg, fd, msg, sz)
+    end
+end
+
+local socket_unpack = function ( msg,size )
+	return netpack.filter(queue,msg,size)
+end
+
+local socket_dispatch = function ( _,_,q,type,... )
+	skynet.error("socket_dispatch type:"..(type or "nil"))
+    queue = q
+    if type == "open" then
+         process_connect(...)
+    elseif type == "data" then
+         process_msg(...)
+    elseif type == "more" then
+         process_more(...)   
+    elseif type == "close" then
+         process_close(...)
+    elseif type == "error" then
+         process_error(...)
+    elseif type == "warning" then
+         process_warning(...)
+    end
 end
 
 function s.init(  )
@@ -133,10 +185,18 @@ function s.init(  )
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
-	local listenfd = socket.listen("0.0.0.0",port)
-
-	skynet.error("listen socket :","0.0.0.0",port)
-	socket.start(listenfd,connect)
+     --注册SOCKET类型消息
+    skynet.register_protocol( {
+         name = "socket",
+         id = skynet.PTYPE_SOCKET,
+         unpack = socket_unpack,
+         dispatch = socket_dispatch,
+    })
+     --注册Lua类型消息（skynet.dispatch 略）
+     --开启监听
+    local listenfd = socketdriver.listen("0.0.0.0", port)
+    skynet.error("listen socket :","0.0.0.0",port)
+    socketdriver.start(listenfd)
 end
 
 
