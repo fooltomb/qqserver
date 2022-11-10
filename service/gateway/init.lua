@@ -187,8 +187,8 @@ function s.init( )
 	local port = nodecfg.gateway[s.id].port
      --注册SOCKET类型消息
     skynet.register_protocol{
-        name = "socket",
-        id = skynet.PTYPE_SOCKET,
+        name = "beanfight",
+        id = 13,
         unpack = socket_unpack,
         dispatch = socket_dispatch
     }
