@@ -158,11 +158,11 @@ function process_more()
     end
 end
 
-local socket_unpack = function ( msg,size )
+function socket_unpack( msg,size )
 	return netpack.filter(queue,msg,size)
 end
 
-local socket_dispatch = function ( _,_,q,type,... )
+function socket_dispatch ( _,_,q,type,... )
 	skynet.error("socket_dispatch type:"..(type or "nil"))
     queue = q
     if type == "open" then
@@ -186,12 +186,12 @@ function s.init(  )
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
      --注册SOCKET类型消息
-    skynet.register_protocol{
+    skynet.register_protocol({
          name = "socket",
          id = skynet.PTYPE_SOCKET,
          unpack = socket_unpack,
          dispatch = socket_dispatch,
-    }
+    })
      --注册Lua类型消息（skynet.dispatch 略）
      --开启监听
     local listenfd = socketdriver.listen("0.0.0.0", port)
