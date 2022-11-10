@@ -137,8 +137,8 @@ local process_close=function ( fd )
 	end
 end
 --发生错误
-local process_error=function (fd, error)
-    skynet.error("error fd:"..fd.." error:"..error)
+local process_error=function (fd, err)
+    skynet.error("error fd:"..fd.." error:"..err)
 end
 --发生警告
 local process_warning = function ( fd,size )
