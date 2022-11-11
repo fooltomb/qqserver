@@ -185,6 +185,7 @@ function s.init( )
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
+	skynet.error(skynet.proto)
      --注册SOCKET类型消息
     skynet.register_protocol{
         name = "socket",
