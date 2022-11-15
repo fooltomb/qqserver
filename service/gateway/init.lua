@@ -374,7 +374,6 @@ s.resp.kick=function ( source,playerid )
 	disconnect(c.fd)
 	socket.close(c.fd)
 end
-
+--]]
 s.start(...)
 
---]]
