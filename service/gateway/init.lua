@@ -375,9 +375,9 @@ s.resp.kick=function ( source,playerid )
 	socket.close(c.fd)
 end
 --]]
-
+gateserver.start(handler)
 function s.init()
-	gateserver.start(handler)
+	--gateserver.start(handler)
 end
 
 s.resp.open=function (source, conf )
