@@ -382,7 +382,7 @@ end
 
 s.resp.open=function (source, conf )
 	skynet.error(conf)
-	skynet.call(gateserver,source,conf)
+	skynet.call(gateserver,"lua","open",source,conf)
 end
 s.start(...)
 
