@@ -1,11 +1,11 @@
 local skynet = require "skynet"
-
+local gateserver = require "snax.gateserver"
 local s = require "service"
-local socket = require "skynet.socket"
+--local socket = require "skynet.socket"
 local runconfig = require "runconfig"
 
-local socketdriver = require "skynet.socketdriver"
-local netpack = require "skynet.netpack"
+--local socketdriver = require "skynet.socketdriver"
+--local netpack = require "skynet.netpack"
 
 conns={}--[fd]=conn
 players={}--[playerID]=gatePlayer
@@ -27,6 +27,121 @@ function gatePlayer(  )
 	return m
 end
 
+skynet.register_protocol {
+	name = "client",
+	id = skynet.PTYPE_CLIENT,
+}
+
+local handler = {}
+
+function handler.open(source, conf)
+	watchdog = conf.watchdog or source
+	return conf.address, conf.port
+end
+
+function handler.message(fd, msgstr, sz)
+
+	local cmd,msg = str_unpack(msgstr)
+	if(cmd~="shift") then
+		skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
+	end
+	local conn=conns[fd]
+	local playerID = conn.playerID
+	if not playerID then
+		local node=skynet.getenv("node")
+		local nodecfg = runconfig[node]
+		local loginid = math.random(1,#nodecfg.login)
+		local login = "login"..loginid
+		skynet.send(login,"lua","client",fd,cmd,msg)
+	else		
+		if cmd=="exit" then
+			local isok=skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
+			skynet.error(isok)
+		else
+			local gplayer = players[playerID]
+			local agent = gplayer.agent
+			skynet.send(agent,"lua","client",cmd,msg)
+		end
+	end
+
+	skynet.trash(msg,sz)
+end
+
+function handler.connect(fd, addr)
+	skynet.error("new connect form "..addr.." "..fd)
+	local c = conn()
+	conns[fd]=c
+	c.fd=fd
+end
+
+local function unforward(c)
+	if c then
+		local isok=skynet.call("agentmgr","lua","reqkick",c.playerID,"主动退出")
+		skynet.error(isok)
+		skynet.error("这里释放")
+	end
+end
+
+local function close_fd(fd)
+	local c = conns[fd]
+	if c then
+		unforward(c)
+		conns[fd] = nil
+	end
+end
+
+function handler.disconnect(fd)
+
+	local c = conns[fd]
+	if not c then
+		return
+	end
+
+	local playerid=c.playerID
+
+	if not playerid then
+		return
+	else
+		players[playerid]=nil
+		local reason = "断线"
+		skynet.call("agentmgr","lua","reqkick",playerid,reason)
+	end
+end
+
+function handler.error(fd, msg)
+	skynet.error("error fd:"..fd.." error:"..err)
+end
+
+function handler.warning(fd, size)
+	skynet.error("warning fd:"..fd.." size:"..size)
+end
+
+local CMD = {}
+
+function CMD.forward(source, fd, client, address)
+	local c = assert(conns[fd])
+	unforward(c)
+	c.client = client or 0
+	c.agent = address or source
+	gateserver.openclient(fd)
+end
+
+function CMD.accept(source, fd)
+	local c = assert(connection[fd])
+	unforward(c)
+	gateserver.openclient(fd)
+end
+
+function CMD.kick(source, fd)
+	gateserver.closeclient(fd)
+end
+
+function handler.command(cmd, source, ...)
+	local f = assert(CMD[cmd])
+	return f(source, ...)
+end
+
+gateserver.start(handler)
 
 local str_unpack = function ( msgstr )
 	local msg = {}
@@ -46,7 +161,7 @@ end
 local str_pack = function ( cmd,msg )
 	return table.concat(msg,",").."|"
 end
-
+--[[
 local process_msg=function ( fd,msgstr )
 	local cmd,msg = str_unpack(msgstr)
 	if(cmd~="shift") then
@@ -261,3 +376,5 @@ s.resp.kick=function ( source,playerid )
 end
 
 s.start(...)
+
+--]]

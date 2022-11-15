@@ -16,7 +16,7 @@ skynet.start(function (  )
 	--]]
 
 	skynet.error("[start main]")
-	
+
 	--[[gateway
 	for i,v in pairs(nodecfg.gateway or {}) do
 		local srv = skynet.newservice("gateway","gateway",i)
@@ -27,6 +27,8 @@ skynet.start(function (  )
 
 	local srv=skynet.newservice("gateway","gateway",1)
 	skynet.name("gateway1",srv)
+
+
 
 	--login
 	for i,v in pairs(nodecfg.login or {}) do
@@ -55,6 +57,12 @@ skynet.start(function (  )
 		skynet.name("roommgr",roomproxy)
 	end
 
+	skynet.call(srv,"lua","open",{
+		address="0.0.0.0",
+		prot=32355,
+		maxclient=1024,
+		nodelay=true,
+	})
 
 
 	skynet.exit()
