@@ -141,7 +141,7 @@ function handler.command(cmd, source, ...)
 	return f(source, ...)
 end
 
-gateserver.start(handler)
+
 
 local str_unpack = function ( msgstr )
 	local msg = {}
@@ -375,8 +375,14 @@ s.resp.kick=function ( source,playerid )
 	socket.close(c.fd)
 end
 --]]
-s.resp.open=function (source, ... )
-	skynet.error(...)
+
+function s.init()
+	gateserver.start(handler)
+end
+
+s.resp.open=function (source, conf )
+	skynet.error(conf)
+	skynet.call(gateserver,source,conf)
 end
 s.start(...)
 
