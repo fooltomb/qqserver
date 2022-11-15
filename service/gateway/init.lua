@@ -375,5 +375,8 @@ s.resp.kick=function ( source,playerid )
 	socket.close(c.fd)
 end
 --]]
+s.resp.open=function (source, ... )
+	skynet.error(...)
+end
 s.start(...)
 
