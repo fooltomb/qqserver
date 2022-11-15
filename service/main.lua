@@ -57,7 +57,7 @@ skynet.start(function (  )
 		skynet.name("roommgr",roomproxy)
 	end
 
-	skynet.call(srv,"lua","open",{
+	skynet.call("gateway1","lua","open",{
 		address="0.0.0.0",
 		prot=32355,
 		maxclient=1024,
