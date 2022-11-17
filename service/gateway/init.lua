@@ -3,7 +3,7 @@ local s = require "service"
 local socket = require "skynet.socket"
 local runconfig = require "runconfig"
 
---local netpack = require "skynet.netpack"
+local netpack = require "skynet.netpack"
 
 conns={}--[fd]=conn
 players={}--[playerID]=gatePlayer
@@ -72,10 +72,14 @@ local process_msg=function ( fd,msgstr )
 	end
 end
 
+local queue 
+
 local process_buff = function ( fd,readbuff )
 
 	while true do
 		skynet.error("readbuff:"..#readbuff)
+		local msgstr = netpack.tosrting(readbuff)
+		skynet.error(msgstr)
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
 			readbuff=rest
