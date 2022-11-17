@@ -75,7 +75,7 @@ end
 local process_buff = function ( fd,readbuff )
 
 	while true do
-		skynet.error("readbuff:"..string.upper(readbuff))
+		skynet.error("readbuff:"..#readbuff)
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
 			readbuff=rest
@@ -84,26 +84,6 @@ local process_buff = function ( fd,readbuff )
 			skynet.error("rest:"..rest)
 		else
 			return readbuff
-		end
-	end
-end
-
-
-
-local recv_loop = function ( fd )
-	socket.start(fd)
-	skynet.error("socket connected "..fd)
-	local readbuff = ""
-	while true do
-		local recvstr = socket.read(fd)
-		if recvstr then
-			readbuff=readbuff..recvstr
-			readbuff=process_buff(fd,readbuff)
-		else
-			skynet.error("socket close "..fd)
-			disconnect(fd)
-			socket.close(fd)
-			return
 		end
 	end
 end
@@ -132,6 +112,25 @@ local disconnect = function(fd)
         
     end
 end
+
+local recv_loop = function ( fd )
+	socket.start(fd)
+	skynet.error("socket connected "..fd)
+	local readbuff = ""
+	while true do
+		local recvstr = socket.read(fd)
+		if recvstr then
+			readbuff=readbuff..recvstr
+			readbuff=process_buff(fd,readbuff)
+		else
+			skynet.error("socket close "..fd)
+			disconnect(fd)
+			socket.close(fd)
+			return
+		end
+	end
+end
+
 
 local process_reconnect = function(fd, msg)
     local playerid = tonumber(msg[2])
