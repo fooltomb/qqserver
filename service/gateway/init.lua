@@ -1,10 +1,8 @@
 local skynet = require "skynet"
-local gateserver = require "snax.gateserver"
 local s = require "service"
---local socket = require "skynet.socket"
+local socket = require "skynet.socket"
 local runconfig = require "runconfig"
 
---local socketdriver = require "skynet.socketdriver"
 --local netpack = require "skynet.netpack"
 
 conns={}--[fd]=conn
@@ -22,125 +20,12 @@ function gatePlayer(  )
 	local m={
 		playerID=nil,
 		agent=nil,
-		conn=nil
+		conn=nil,
+		lost_conn_time=nil,
+		msgcache={}
 	}
 	return m
 end
-
-skynet.register_protocol {
-	name = "client",
-	id = skynet.PTYPE_CLIENT,
-}
-
-local handler = {}
-
-function handler.open(source, conf)
-	watchdog = conf.watchdog or source
-	return conf.address, conf.port
-end
-
-function handler.message(fd, msgstr, sz)
-
-	local cmd,msg = str_unpack(msgstr)
-	if(cmd~="shift") then
-		skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
-	end
-	local conn=conns[fd]
-	local playerID = conn.playerID
-	if not playerID then
-		local node=skynet.getenv("node")
-		local nodecfg = runconfig[node]
-		local loginid = math.random(1,#nodecfg.login)
-		local login = "login"..loginid
-		skynet.send(login,"lua","client",fd,cmd,msg)
-	else		
-		if cmd=="exit" then
-			local isok=skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
-			skynet.error(isok)
-		else
-			local gplayer = players[playerID]
-			local agent = gplayer.agent
-			skynet.send(agent,"lua","client",cmd,msg)
-		end
-	end
-
-	skynet.trash(msg,sz)
-end
-
-function handler.connect(fd, addr)
-	skynet.error("new connect form "..addr.." "..fd)
-	local c = conn()
-	conns[fd]=c
-	c.fd=fd
-end
-
-local function unforward(c)
-	if c then
-		local isok=skynet.call("agentmgr","lua","reqkick",c.playerID,"主动退出")
-		skynet.error(isok)
-		skynet.error("这里释放")
-	end
-end
-
-local function close_fd(fd)
-	local c = conns[fd]
-	if c then
-		unforward(c)
-		conns[fd] = nil
-	end
-end
-
-function handler.disconnect(fd)
-
-	local c = conns[fd]
-	if not c then
-		return
-	end
-
-	local playerid=c.playerID
-
-	if not playerid then
-		return
-	else
-		players[playerid]=nil
-		local reason = "断线"
-		skynet.call("agentmgr","lua","reqkick",playerid,reason)
-	end
-end
-
-function handler.error(fd, msg)
-	skynet.error("error fd:"..fd.." error:"..err)
-end
-
-function handler.warning(fd, size)
-	skynet.error("warning fd:"..fd.." size:"..size)
-end
-
-local CMD = {}
-
-function CMD.forward(source, fd, client, address)
-	local c = assert(conns[fd])
-	unforward(c)
-	c.client = client or 0
-	c.agent = address or source
-	gateserver.openclient(fd)
-end
-
-function CMD.accept(source, fd)
-	local c = assert(connection[fd])
-	unforward(c)
-	gateserver.openclient(fd)
-end
-
-function CMD.kick(source, fd)
-	gateserver.closeclient(fd)
-end
-
-function handler.command(cmd, source, ...)
-	local f = assert(CMD[cmd])
-	return f(source, ...)
-end
-
 
 
 local str_unpack = function ( msgstr )
@@ -161,7 +46,7 @@ end
 local str_pack = function ( cmd,msg )
 	return table.concat(msg,",").."|"
 end
---[[
+
 local process_msg=function ( fd,msgstr )
 	local cmd,msg = str_unpack(msgstr)
 	if(cmd~="shift") then
@@ -223,76 +108,75 @@ local recv_loop = function ( fd )
 	end
 end
 
+local disconnect = function(fd)
+    local c = conns[fd]
+    if not c then
+        return
+    end
 
+    local playerid = c.playerid
+    --还没完成登录
+    if not playerid then
+        return
+    --已在游戏中
+    else
+        local gplayer = players[playerid]
+        gplayer.conn = nil --  players[playerid] = nil
+        skynet.timeout(30*100, function()
+            if gplayer.conn ~= nil then
+                return
+            end
+            local reason = "断线超时"
+            skynet.call("agentmgr", "lua", "reqkick", playerid, reason)
+        end)
+        
+    end
+end
 
-local queue
---有新的链接
-local process_connect = function ( fd,addr )
-	skynet.error("new connect form "..addr.." "..fd)
+local process_reconnect = function(fd, msg)
+    local playerid = tonumber(msg[2])
+    local key = tonumber(msg[3])
+    --conn
+    local conn = conns[fd]
+    if not conn then
+        skynet.error("reconnect fail, conn not exist")
+        return
+    end   
+    --gplayer
+    local gplayer = players[playerid]
+    if not gplayer then
+        skynet.error("reconnect fail, player not exist")
+        return
+    end
+    if gplayer.conn then
+        skynet.error("reconnect fail, conn not break")
+        return
+    end
+    if gplayer.key ~= key then
+        skynet.error("reconnect fail, key error")
+        return
+    end
+    --绑定
+    gplayer.conn = conn
+    conn.playerid = playerid
+    --回应
+    s.resp.send_by_fd(nil, fd, {"reconnect", 0})
+    --发送缓存消息
+    for i, cmsg in ipairs(gplayer.msgcache) do
+        s.resp.send_by_fd(nil, fd, cmsg)
+    end
+    gplayer.msgcache = {}
+end
+
+local connect = function(fd, addr)
+    if closing then
+        return
+    end
+    skynet.error("connect from " .. addr .. " " .. fd)
 	local c = conn()
-	conns[fd]=c
-	c.fd=fd
-	socketdriver.start(fd)
-end
---关闭连接
-local process_close=function ( fd )
-	local c = conns[fd]
-	if not c then
-		return
-	end
-
-	local playerid=c.playerID
-
-	if not playerid then
-		return
-	else
-		players[playerid]=nil
-		local reason = "断线"
-		skynet.call("agentmgr","lua","reqkick",playerid,reason)
-	end
-end
---发生错误
-local process_error=function (fd, err)
-    skynet.error("error fd:"..fd.." error:"..err)
-end
---发生警告
-local process_warning = function ( fd,size )
-	skynet.error("warning fd:"..fd.." size:"..size)
-end
-
---处理消息
-function process_msg(fd, msg, sz)
-    local str = netpack.tostring(msg,sz)
-    skynet.error("recv from fd:"..fd .." str:"..str)
-end
-
---收到多于1条消息时
-function process_more()
-    for fd, msg, sz in netpack.pop, queue do
-         skynet.fork(process_msg, fd, msg, sz)
-    end
-end
-
-function socket_unpack( msg,size )
-	return netpack.filter(queue,msg,size)
-end
-
-function socket_dispatch ( _,_,q,type,... )
-	skynet.error("socket_dispatch type:"..(type or "nil"))
-    queue = q
-    if type == "open" then
-         process_connect(...)
-    elseif type == "data" then
-         process_msg(...)
-    elseif type == "more" then
-         process_more(...)   
-    elseif type == "close" then
-         process_close(...)
-    elseif type == "error" then
-         process_error(...)
-    elseif type == "warning" then
-         process_warning(...)
-    end
+    conns[fd] = c
+    c.fd = fd
+    skynet.fork(recv_loop, fd)
 end
 
 function s.init( )
@@ -300,18 +184,10 @@ function s.init( )
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
-	skynet.error(skynet.proto)
-     --注册SOCKET类型消息
-    skynet.register_protocol{
-        name = "socket",
-        id = skynet.PTYPE_SOCKET,
-        unpack = socket_unpack,
-        dispatch = socket_dispatch
-    }
-     --开启监听
-    local listenfd = socketdriver.listen("0.0.0.0", port)
+
+    local listenfd = socket.listen("0.0.0.0", port)
     skynet.error("listen socket :","0.0.0.0",port)
-    socketdriver.start(listenfd)
+    socket.start(listenfd,connect)
 end
 
 
@@ -374,15 +250,6 @@ s.resp.kick=function ( source,playerid )
 	disconnect(c.fd)
 	socket.close(c.fd)
 end
---]]
-gateserver.start(handler)
-function s.init()
-	--gateserver.start(handler)
-end
 
-s.resp.open=function (source, conf )
-	skynet.error(conf)
-	skynet.call(gateserver,"lua","open",conf)
-end
 s.start(...)
 
