@@ -77,8 +77,8 @@ local queue
 local process_buff = function ( fd,readbuff )
 
 	while true do
-		skynet.error("readbuff:"..#readbuff)
-		local msgstr = netpack.tostring(readbuff,200)
+		skynet.error("readbuff:"..#readbuff.."type:"..type(readbuff))
+		local msgstr = skynet.unpack(readbuff)
 		skynet.error(msgstr)
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
