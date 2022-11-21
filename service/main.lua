@@ -2,8 +2,30 @@ local skynet = require "skynet"
 local skynet_manager = require "skynet.manager"
 local runconfig = require "runconfig"
 local cluster = require "skynet.cluster"
+local pb=require "protobuf"
+
+
+
+function test4()
+	pb.register_file("./proto/login.pb")
+	local msg={
+		id=12,
+		pw="dfadf",
+	}
+	local buff=pb.encode("login.Login",msg)
+	skynet.error("len:"..string.len(buff))
+	local umsg=pb.decode("login.Login",buff)
+	if umsg then
+		skynet.error("id:"..umsg.id)
+		skynet.error("pw:"..umsg.pw)
+	else
+		skynet.error("error")
+	end
+end
+
 
 skynet.start(function (  )
+	test4()
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
