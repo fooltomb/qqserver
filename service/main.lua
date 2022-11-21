@@ -6,7 +6,8 @@ local pb=require "protobuf"
 
 
 
-function test4()
+function test4(cmd,msg)
+	--[[
 	pb.register_file("./proto/login.pb")
 	local msg={
 		id=12,
@@ -21,11 +22,21 @@ function test4()
 	else
 		skynet.error("error")
 	end
+	--]]
+
+	local namelen=string.len(cmd)
+	local bodylen=string.len(msg)
+	local len=2+namelen+bodylen
+	local formatstr=string.format("> i2 i2 c%d c%d",namelen,bodylen)
+	skynet.error(formatstr)
+	local buff = string.pack(formatstr,len,namelen,cmd,msg)
+	return buff
+
 end
 
 
 skynet.start(function (  )
-	--test4()
+	test4("login","dfdf")
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
