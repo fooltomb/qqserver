@@ -3,7 +3,8 @@ local s = require "service"
 local socket = require "skynet.socket"
 local runconfig = require "runconfig"
 
-local netpack = require "skynet.netpack"
+--local netpack = require "skynet.netpack"
+local pb=require "protobuf"
 
 conns={}--[fd]=conn
 players={}--[playerID]=gatePlayer
@@ -78,7 +79,17 @@ local process_buff = function ( fd,readbuff )
 
 	while true do
 		skynet.error("readbuff:"..#readbuff.."type:"..type(readbuff))
-		local msgstr = skynet.unpack(readbuff)
+
+		local umsg = pb.decode("login.Login",readbuff)
+
+		if umsg then
+			skynet.error("id:"..umsg.id)
+			skynet.error("pw:"..umsg.pw)
+		else
+			skynet.error("error")
+		end
+
+		local msgstr = string.sub(readbuff,1,2)
 		skynet.error(msgstr)
 		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
 		if msgstr then
@@ -187,6 +198,8 @@ function s.init( )
 	local node = skynet.getenv("node")
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
+
+	pb.register_file("./proto/login.pb")
 
     local listenfd = socket.listen("0.0.0.0", port)
     skynet.error("listen socket :","0.0.0.0",port)

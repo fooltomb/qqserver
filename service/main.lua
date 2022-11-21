@@ -25,7 +25,7 @@ end
 
 
 skynet.start(function (  )
-	test4()
+	--test4()
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
