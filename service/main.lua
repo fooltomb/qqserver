@@ -34,9 +34,19 @@ function test4(cmd,msg)
 
 end
 
+function test5( buff )
+	local len = string.len(buff)
+	local namelen_format = string.format("> i2 c%d",len-2)
+	local namelen,other = string.unpack(namelen_format,buff)
+	local bodylen=len-namelen-2
+	local bodyformat = string.format("> c%d c%d",namelen,bodylen)
+	local cmd,msg = string.unpack(bodyformat,other)
+	skynet.error(cmd.." : "..msg)
+end
+
 
 skynet.start(function (  )
-	test4("login","dfdf")
+	test5(test4("login","dfdf"))
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
