@@ -36,8 +36,9 @@ end
 
 function test5( buff )
 	local len = string.len(buff)
-	local namelen_format = string.format("> i2 i2 c%d",len-2)
+	local namelen_format = string.format("> i2 i2 c%d",len)
 	local _,namelen,other = string.unpack(namelen_format,buff)
+	
 	local bodylen=len-namelen-2
 	local bodyformat = string.format("> c%d c%d",namelen,bodylen)
 	local cmd,msg = string.unpack(bodyformat,other)
