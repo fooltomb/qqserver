@@ -36,7 +36,7 @@ end
 
 function test5( buff )
 	local len = string.len(buff)
-	local namelen_format = string.format("> i2 i2 c%d",len)
+	local namelen_format = string.format("> i2 i2 c%d",len-4)
 	local _,namelen,other = string.unpack(namelen_format,buff)
 	
 	local bodylen=len-namelen-2
@@ -47,7 +47,7 @@ end
 
 
 skynet.start(function (  )
-	test5(test4("login","dfdf"))
+	--test5(test4("login","dfdf"))
 	--初始化
 	local mynode = skynet.getenv("node")
 	local nodecfg = runconfig[mynode]
