@@ -48,7 +48,17 @@ local str_pack = function ( cmd,msg )
 	return table.concat(msg,",").."|"
 end
 
-local process_msg=function ( fd,msgstr )
+local process_msg=function ( fd,cmd,msgpb )
+
+	local umsg = pb.decode("login.Login",msgpb)
+
+	if umsg then
+		skynet.error("id:"..umsg.id)
+		skynet.error("pw:"..umsg.pw)
+	else
+		skynet.error("error")
+	end
+	--[[
 	local cmd,msg = str_unpack(msgstr)
 	if(cmd~="shift") then
 		skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
@@ -71,12 +81,23 @@ local process_msg=function ( fd,msgstr )
 			skynet.send(agent,"lua","client",cmd,msg)
 		end
 	end
+	--]]
 end
 
-local queue 
 
 local process_buff = function ( fd,readbuff )
-
+	local bufflen = string.len(readbuff)
+	if bufflen<5 then
+		return readbuff
+	local formatStr = string.format("> i2 i2 c%d",bufflen-4)
+	local msglen,namelen,other=string.unpack(formatStr,readbuff)
+	if bufflen<msglen+2 then
+		return readbuff
+	formatStr = string.format("> c%d c%d c%d",namelen,msglen-namelen-2,bufflen-msglen-2)
+	local cmd,msgpb,rest = string.unpack(formatStr,other)
+	process_msg(fd,cmd,msgpb)
+	return rest
+--[[
 	while true do
 		skynet.error("readbuff:"..#readbuff.."type:"..type(readbuff))
 
@@ -101,6 +122,7 @@ local process_buff = function ( fd,readbuff )
 			return readbuff
 		end
 	end
+	--]]
 end
 
 local disconnect = function(fd)
