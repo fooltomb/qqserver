@@ -89,10 +89,12 @@ local process_buff = function ( fd,readbuff )
 	local bufflen = string.len(readbuff)
 	if bufflen<5 then
 		return readbuff
+	end
 	local formatStr = string.format("> i2 i2 c%d",bufflen-4)
 	local msglen,namelen,other=string.unpack(formatStr,readbuff)
 	if bufflen<msglen+2 then
 		return readbuff
+	end
 	formatStr = string.format("> c%d c%d c%d",namelen,msglen-namelen-2,bufflen-msglen-2)
 	local cmd,msgpb,rest = string.unpack(formatStr,other)
 	process_msg(fd,cmd,msgpb)
