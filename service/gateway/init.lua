@@ -87,11 +87,13 @@ end
 
 local process_buff = function ( fd,readbuff )
 	local bufflen = string.len(readbuff)
+	skynet.error("bufflen:"..bufflen)
 	if bufflen<5 then
 		return readbuff
 	end
 	local formatStr = string.format("> i2 i2 c%d",bufflen-4)
 	local msglen,namelen,other=string.unpack(formatStr,readbuff)
+	skynet.error("msglen:"..msglen.."|namelen:"..namelen)
 	if bufflen<msglen+2 then
 		return readbuff
 	end
