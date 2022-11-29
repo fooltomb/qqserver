@@ -1,7 +1,18 @@
-package login;
-message Login{
-	required int32 id=1;
+package PMPlayer;
+message PBLogin{
+	required string name=1;
 	required string pw=2;
 	optional int32 result=3;
+}
+message PBPlayerInfo{
+	required int32 id=1;
+	required string name=2;
+	required int32 kill=3;
+	required int32 death=4;
+	required int32 win=5;
+	required int32 score=6;
+	required int32 match=7;
+	optional int32 result=8;
+	optional string error=9;
 }
 

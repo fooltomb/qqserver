@@ -1,9 +1,19 @@
 
-H
-PMPlayer.protologin"/
-Login
-
-id (
+·
+PMPlayer.protoPMPlayer"3
+PBLogin
+name (	
 
 pw (	
-result (
+result ("è
+PBPlayerInfo
+
+id (
+name (	
+kill (
+death (
+win (
+score (
+match (
+result (
+error	 (	
