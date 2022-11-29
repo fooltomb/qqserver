@@ -60,21 +60,46 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 end
 
 s.resp.reqlogin=function ( source,playername,pwd,node,gate )
+	local playerInfo = {
+		id=0,
+		name="",
+		kill=0,
+		death=0,
+		win=0,
+		score=0,
+		match=0,
+		result=0,
+		error=""
+	}
 	local request = string.format("select * from player where name=\'%s\'",playername)
 	local res = db:query(request)
 	if not res.badresult then
 		if #res==0 then
-			return false,"没有该用户"
+			playerInfo.error="没有该用户"
+			return false,nil,playerInfo
 		else
 			if res[1].password~=pwd then
-				return false,"密码错误"
+				playerInfo.error="密码错误"
+				return false,nil,playerInfo
+			end			
+			local loginok,agent,errormsg = s.resp.login(source,playerid,node,gate)
+			if loginok then
+				playerInfo.id=res[1].id
+				playerInfo.name=res[1].name
+				playerInfo.kill=res[1].kill
+				playerInfo.death=res[1].death
+				playerInfo.win=res[1].win
+				playerInfo.score=res[1].score
+				playerInfo.match=res[1].match
+				playerInfo.result=1
+			else
+				playerInfo.error=errormsg
 			end
-			local playerid = res[1].id
-			local loginok,agent = s.resp.login(source,playerid,node,gate)
-			return loginok,agent,playerid
+			return loginok,agent,playerInfo
 		end
 	else
-		return false,"db error"
+		playerInfo.error="数据库错误"
+		return false,nil,playerInfo
 	end
 end
 
@@ -83,11 +108,11 @@ s.resp.login=function ( source,playerid,node,gate )
 	local mplayer = players[playerid]
 	if mplayer and mplayer.status==STATUS.LOGOUT then
 		skynet.error("reqlogin fail,at status LOGOUT "..playerid)
-		return false,"该用户正在登出，请稍后尝试"
+		return false,nil,"该用户正在登出，请稍后尝试"
 	end
 	if mplayer and mplayer.status == STATUS.LOGIN then
 		skynet.error("reqlogin fail,at status LOGIN "..playerid)
-		return false,"该用户正在其他地点登陆，请稍后尝试"
+		return false,nil,"该用户正在其他地点登陆，请稍后尝试"
 	end
 	-- 顶替
 	if mplayer then
@@ -111,7 +136,7 @@ s.resp.login=function ( source,playerid,node,gate )
 	local agent = s.call(node,"nodemgr","newservice","agent","agent",playerid)
 	player.agent=agent
 	player.status=STATUS.GAME
-	return true,agent
+	return true,agent,""
 end
 
 s.resp.reqkick=function ( source,playerid,reason )

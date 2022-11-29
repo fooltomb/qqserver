@@ -1,25 +1,30 @@
 local skynet = require "skynet"
 local s = require "service"
+local pb = require "protobuf"
 
 s.client={}
 
 s.client.login=function ( fd,msg,source )
-	skynet.error("login recv "..msg[1].." "..msg[2])
-	local playername=msg[2]
-	local pwd = msg[3]
+
+	local msgpb = pb.decode("PMPlayer.PBLogin",msg)
+	skynet.error("login recv "..msgpb.id.." "..msgpb.pw)
+	local playername=msgpb.id
+	local pwd = msgpb.pw
 	local gate = source
 	node = skynet.getenv("node")
-	local isok,agent,playerid = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
+	local isok,agent,playerInfo = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
 	if not isok then
-		return {"login",1,agent}
+		return playerInfo
 	end
-	local isok = skynet.call(gate,"lua","sure_agent",fd,playerid,agent)
+	local isok = skynet.call(gate,"lua","sure_agent",fd,playerInfo.id,agent)
 	if not isok then
-		return {"login",1,"agent注册失败"}
+		playerInfo.error="agent注册失败"
+		playerInfo.rusult=0
+		return playerInfo
 	end
-	skynet.error("login succeed "..playerid)
+	skynet.error("login succeed "..playerInfo.id.."|name:"..playerInfo.name)
 
-	return {"login",0,"登陆成功"}
+	return playerInfo
 end
 
 s.client.register=function ( fd,msg,source )
@@ -42,10 +47,15 @@ end
 s.resp.client=function ( source,fd,cmd,msg )
 	if s.client[cmd] then
 		local ret_msg = s.client[cmd](fd,msg,source)
-		skynet.send(source,"lua","send_by_fd",fd,ret_msg)
+		local ret_pb = pb.encode("PMPlayer.PBPlayerInfo",ret_msg)
+		skynet.send(source,"lua","send_by_fd",fd,cmd,ret_pb)
 	else
 		skynet.error("s.resp.client fail",cmd)
 	end
+end
+
+function s.init( )
+	pb.register_file("./proto/PMPlayer.pb")
 end
 
 s.start(...)

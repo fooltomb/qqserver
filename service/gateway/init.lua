@@ -4,7 +4,7 @@ local socket = require "skynet.socket"
 local runconfig = require "runconfig"
 
 --local netpack = require "skynet.netpack"
-local pb=require "protobuf"
+--local pb=require "protobuf"
 
 conns={}--[fd]=conn
 players={}--[playerID]=gatePlayer
@@ -45,11 +45,15 @@ local str_unpack = function ( msgstr )
 end
 
 local str_pack = function ( cmd,msg )
-	return table.concat(msg,",").."|"
+	local msglen= string.len(msg)
+	local namelen = string.len(cmd)
+	local formatstr = string.format("> i2 i2 c%d c%d",namelen,msglen)
+	local buff = string.pack(formatstr,namelen+msglen+2,namelen,cmd,msg)
+	return buff
 end
 
 local process_msg=function ( fd,cmd,msgpb )
-	skynet.error("cmd:"..cmd)
+	--skynet.error("cmd:"..cmd)
 	local umsg = pb.decode("login.Login",msgpb)
 
 	if umsg then
@@ -58,10 +62,9 @@ local process_msg=function ( fd,cmd,msgpb )
 	else
 		skynet.error("error")
 	end
-	--[[
-	local cmd,msg = str_unpack(msgstr)
+
 	if(cmd~="shift") then
-		skynet.error("receive "..fd.."["..cmd.."]|receive msg :{"..table.concat(msg,",").."}")
+		skynet.error("receive "..fd.."["..cmd.."]")
 	end
 	local conn=conns[fd]
 	local playerID = conn.playerID
@@ -70,7 +73,7 @@ local process_msg=function ( fd,cmd,msgpb )
 		local nodecfg = runconfig[node]
 		local loginid = math.random(1,#nodecfg.login)
 		local login = "login"..loginid
-		skynet.send(login,"lua","client",fd,cmd,msg)
+		skynet.send(login,"lua","client",fd,cmd,msgpb)
 	else		
 		if cmd=="exit" then
 			local isok=skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
@@ -106,32 +109,7 @@ local process_buff = function ( fd,readbuff )
 			readbuff = rest
 		end
 	end
---[[
-	while true do
-		skynet.error("readbuff:"..#readbuff.."type:"..type(readbuff))
 
-		local umsg = pb.decode("login.Login",readbuff)
-
-		if umsg then
-			skynet.error("id:"..umsg.id)
-			skynet.error("pw:"..umsg.pw)
-		else
-			skynet.error("error")
-		end
-
-		local msgstr = string.sub(readbuff,1,2)
-		skynet.error(msgstr)
-		local msgstr,rest=string.match(readbuff,"(.-)|(.*)")
-		if msgstr then
-			readbuff=rest
-			--process_msg(fd,msgstr)
-			skynet.error("msgstr:"..msgstr)
-			skynet.error("rest:"..rest)
-		else
-			return readbuff
-		end
-	end
-	--]]
 end
 
 local disconnect = function(fd)
@@ -230,7 +208,7 @@ function s.init( )
 	local nodecfg = runconfig[node]
 	local port = nodecfg.gateway[s.id].port
 
-	pb.register_file("./proto/login.pb")
+	--pb.register_file("./proto/login.pb")
 
     local listenfd = socket.listen("0.0.0.0", port)
     skynet.error("listen socket :","0.0.0.0",port)
@@ -239,15 +217,13 @@ end
 
 
 
-s.resp.send_by_fd=function ( source,fd,msg )
+s.resp.send_by_fd=function ( source,fd,cmd,msg )
 	if not conns[fd] then
 		return
 	end
 
-	local buff = str_pack(msg[1],msg)
-	if(msg[1]~="shift") then
-		skynet.error("send "..fd.." ["..msg[1].."] {"..table.concat(msg,",").."}")
-	end
+	local buff = str_pack(cmd,msg)
+
 	socket.write(fd,buff)
 end
 
