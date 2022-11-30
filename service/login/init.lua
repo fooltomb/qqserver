@@ -7,8 +7,8 @@ s.client={}
 s.client.login=function ( fd,msg,source )
 
 	local msgpb = pb.decode("PMPlayer.PBLogin",msg)
-	skynet.error("login recv "..msgpb.id.." "..msgpb.pw)
-	local playername=msgpb.id
+	skynet.error("login recv "..msgpb.name.." "..msgpb.pw)
+	local playername=msgpb.name
 	local pwd = msgpb.pw
 	local gate = source
 	node = skynet.getenv("node")
