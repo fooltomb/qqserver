@@ -218,7 +218,9 @@ end
 
 
 s.resp.send_by_fd=function ( source,fd,cmd,msg )
+
 	if not conns[fd] then
+		skynet.error("cant find conns:"..fd)
 		return
 	end
 

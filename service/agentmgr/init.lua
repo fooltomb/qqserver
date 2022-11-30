@@ -77,10 +77,12 @@ s.resp.reqlogin=function ( source,playername,pwd,node,gate )
 	skynet.error("after query")
 	if not res.badresult then
 		if #res==0 then
+			skynet.error("cannot found")
 			playerInfo.error="没有该用户"
 			return false,nil,playerInfo
 		else
 			if res[1].password~=pwd then
+				skynet.error("wrong password")
 				playerInfo.error="密码错误"
 				return false,nil,playerInfo
 			end			
