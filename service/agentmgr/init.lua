@@ -72,8 +72,9 @@ s.resp.reqlogin=function ( source,playername,pwd,node,gate )
 		error=""
 	}
 	local request = string.format("select * from player where name=\'%s\'",playername)
-	skynet.error("here")
+
 	local res = db:query(request)
+	skynet.error("after query")
 	if not res.badresult then
 		if #res==0 then
 			playerInfo.error="没有该用户"
