@@ -53,7 +53,7 @@ local str_pack = function ( cmd,msg )
 end
 
 local process_msg=function ( fd,cmd,msgpb )
-	--skynet.error("cmd:"..cmd)
+	--[[skynet.error("cmd:"..cmd)
 	local umsg = pb.decode("login.Login",msgpb)
 
 	if umsg then
@@ -62,7 +62,7 @@ local process_msg=function ( fd,cmd,msgpb )
 	else
 		skynet.error("error")
 	end
-
+	--]]
 	if(cmd~="shift") then
 		skynet.error("receive "..fd.."["..cmd.."]")
 	end
