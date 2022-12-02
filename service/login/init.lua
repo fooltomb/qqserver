@@ -28,20 +28,25 @@ s.client.login=function ( fd,msg,source )
 end
 
 s.client.register=function ( fd,msg,source )
-	local playername = msg[2]
-	local pwd = msg[3]
+	local msgpb = pb.decode("PMPlayer.PBLogin",msg)
+	local playername = msgpb.name
+	local pwd = msgpb.pw
 	local gate = source
 	node=skynet.getenv("node")
-	local isok,agent,playerid = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
+	local isok,agent,playerInfo = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
 	if not isok then
-		return {"register",1,agent}
+		--return {"register",1,agent}
+		return playerInfo
 	end
-	isok=skynet.call(gate,"lua","sure_agent",fd,playerid,agent)
+	isok=skynet.call(gate,"lua","sure_agent",fd,playerInfo.id,agent)
 	if not isok then
-		return {"register",1,"gate注册失败"}
+		--return {"register",1,"gate注册失败"}
+		playerInfo.result=0
+		playerInfo.error="gate注册失败"
+		return playerInfo
 	end
-	skynet.error("register succeed "..playerid)
-	return {"register",0,"注册成功"}
+	skynet.error("register succeed "..playerInfo.id)
+	return playerInfo
 end
 
 s.resp.client=function ( source,fd,cmd,msg )

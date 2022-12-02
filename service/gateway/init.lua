@@ -225,7 +225,7 @@ s.resp.send_by_fd=function ( source,fd,cmd,msg )
 	end
 
 	local buff = str_pack(cmd,msg)
-
+	skynet.error("send response")
 	socket.write(fd,buff)
 end
 

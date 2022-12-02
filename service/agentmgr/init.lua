@@ -50,12 +50,30 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	--print(request)
 	local res= db:query(request)
 	--dump(res)
+	local playerInfo = {
+		id=0,
+		name="",
+		kill=0,
+		death=0,
+		win=0,
+		score=0,
+		match=0,
+		result=0,
+		error=""
+	}
 	if not res.badresult then
-		local playerid = res.insert_id
-		local loginok,agent = s.resp.login(source,playerid,node,gate)
-		return loginok,agent,playerid
+		playerInfo.id = res.insert_id
+		local loginok,agent,errormsg = s.resp.login(source,playerInfo.id,node,gate)
+		if loginok then
+			playerInfo.result=1
+		else
+			playerInfo.error=errormsg
+		end
+		return loginok,agent,playerInfo
 	else
-		return false,"该用户名已被注册"
+		playerInfo.result=0
+		playerInfo.error="该用户名已被注册，请换一个"
+		return false,nil,playerInfo
 	end
 end
 
