@@ -104,7 +104,7 @@ s.resp.reqlogin=function ( source,playername,pwd,node,gate )
 				playerInfo.error="密码错误"
 				return false,nil,playerInfo
 			end			
-			local loginok,agent,errormsg = s.resp.login(source,playerid,node,gate)
+			local loginok,agent,errormsg = s.resp.login(source,res[1].id,node,gate)
 			if loginok then
 				playerInfo.id=res[1].id
 				playerInfo.name=res[1].name

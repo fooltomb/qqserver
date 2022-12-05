@@ -52,7 +52,7 @@ end
 s.resp.client=function ( source,fd,cmd,msg )
 	if s.client[cmd] then
 		local ret_msg = s.client[cmd](fd,msg,source)
-		skynet.error("login return")
+		--skynet.error("login return")
 		local ret_pb = pb.encode("PMPlayer.PBPlayerInfo",ret_msg)
 		skynet.send(source,"lua","send_by_fd",fd,cmd,ret_pb)
 	else
