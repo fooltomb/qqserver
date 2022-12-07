@@ -23,7 +23,7 @@ s.client.login=function ( fd,msg,source )
 		return playerInfo
 	end
 	skynet.error("login succeed "..playerInfo.id.."|name:"..playerInfo.name)
-
+	skynet.send(agent,"lua","client","setPlayer",playerInfo)
 	return playerInfo
 end
 
@@ -46,6 +46,7 @@ s.client.register=function ( fd,msg,source )
 		return playerInfo
 	end
 	skynet.error("register succeed "..playerInfo.id)
+	skynet.send(agent,"lua","client","setPlayer",playerInfo)
 	return playerInfo
 end
 

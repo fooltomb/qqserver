@@ -229,7 +229,7 @@ s.resp.send_by_fd=function ( source,fd,cmd,msg )
 	socket.write(fd,buff)
 end
 
-s.resp.send=function ( source,playerid,msg )
+s.resp.send=function ( source,playerid,cmd,msg )
 	local gplayer = players[playerid]
 	if gplayer == nil then
 		skynet.error("gplayer is nil")
@@ -240,7 +240,7 @@ s.resp.send=function ( source,playerid,msg )
 		skynet.error("conn is nil")
 		return
 	end
-	s.resp.send_by_fd(nil,c.fd,msg)
+	s.resp.send_by_fd(nil,c.fd,cmd,msg)
 	-- body
 end
 

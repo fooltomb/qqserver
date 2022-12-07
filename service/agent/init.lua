@@ -62,13 +62,20 @@ s.client.work=function ( msg )
 	s.data.coin=s.data.coin+1
 	return {"work",s.data.coin}
 end
-s.client.setPlayer=function ( msg )
-	s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo",s.id)
-	return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match,s.id)}
+s.client.setPlayer=function ( playerInfo )
+	s.aplayer.name=playerInfo.name
+	s.aplayer.kill=playerInfo.kill
+	s.aplayer.death=playerInfo.death
+	s.aplayer.score=playerInfo.score
+	s.aplayer.match=playerInfo.match
+	s.aplayer.id=playerInfo.id
+	--s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match=skynet.call("agentmgr","lua","getPlayerInfo",s.id)
+	--return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match,s.id)}
+	return
 end
-s.client.getRooms=function ( msg )
+s.client.getRooms=function ( msg,source )
 	--skynet.error(msg)
-	return skynet.call("roommgr","lua","GetRoomList",msg)
+	return skynet.call("roommgr","lua","GetRoomList",s.id,source)
 end
 
 s.client.createRoom=function ( msg )

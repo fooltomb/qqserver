@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local s = require "service"
+local pb = require "protobuf"
 
 local rooms = {}--[roomid]=room
 local playerRoom = {} --[playerName]=room
@@ -145,13 +146,27 @@ s.resp.Exit=function ( source,playerName )
 	playerAgent[playerName]=nil
 end
 
-s.resp.GetRoomList=function ( source )
+s.resp.GetRoomList=function ( agentid,source )
 	--skynet.error("roomMgr Get RoomList")
-	local msg = ""
 	for k,v in pairs(rooms) do
-		msg=msg..v.id..":"..v.name..";"
+		local roomInfo = {}
+		roomInfo.id=v.id
+		roomInfo.name=v.name
+		roomInfo.creater=v.creater
+		roomInfo.pw=v.pw
+		roomInfo.count=v.count
+		roomInfo.players={}
+		for kp,vp in pairs(v.players) do
+			table.insert(roomInfo.players,{name=kp,status=vp})
+		end
+		local ret_pb = pb.encode("PMRoom.PBRoomInfo",roomInfo)
+		skynet.send(source,"lua","send",agentid,"getRooms",ret_pb)
 	end
-	return {"roomList",0,msg}
+	return 
+end
+
+function s.init( )
+	pb.register_file("./proto/PMRoom.pb")
 end
 
 s.start(...)
