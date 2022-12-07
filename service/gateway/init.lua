@@ -118,7 +118,7 @@ local disconnect = function(fd)
         return
     end
 
-    local playerid = c.playerid
+    local playerid = c.playerID
     --还没完成登录
     if not playerid then
         return
