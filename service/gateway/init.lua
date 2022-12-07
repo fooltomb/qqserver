@@ -126,6 +126,7 @@ local disconnect = function(fd)
     else
         local gplayer = players[playerid]
         gplayer.conn = nil --  players[playerid] = nil
+        skynet.error("wait for reconnect")
         skynet.timeout(30*100, function()
             if gplayer.conn ~= nil then
                 return
