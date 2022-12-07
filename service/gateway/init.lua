@@ -127,7 +127,7 @@ local disconnect = function(fd)
         local gplayer = players[playerid]
         gplayer.conn = nil --  players[playerid] = nil
         skynet.error("wait for reconnect")
-        skynet.timeout(30*100, function()
+        skynet.timeout(10*100, function()
             if gplayer.conn ~= nil then
                 return
             end
@@ -253,11 +253,17 @@ s.resp.sure_agent=function ( source,fd,playerid,agent )
 		return false
 	end
 	conn.playerID=playerid
-	local gplayer = gatePlayer()
-	gplayer.playerID=playerid
-	gplayer.agent=agent
-	gplayer.conn=conn
-	players[playerid]=gplayer
+	local oldplayer = players[playerid]
+	if oldplayer then
+		oldplayer.conn=conn
+		skynet.send(node,agent,"exit")
+	else
+		local gplayer = gatePlayer()
+		gplayer.playerID=playerid
+		gplayer.agent=agent
+		gplayer.conn=conn
+		players[playerid]=gplayer
+	end
 	return true
 end
 
