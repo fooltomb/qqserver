@@ -91,13 +91,13 @@ end
 local process_buff = function ( fd,readbuff )
 	while true do
 		local bufflen = string.len(readbuff)
-		skynet.error("bufflen:"..bufflen)
+		--skynet.error("bufflen:"..bufflen)
 		if bufflen<5 then
 			return readbuff
 		end
 		local formatStr = string.format("> i2 i2 c%d",bufflen-4)
 		local msglen,namelen,other=string.unpack(formatStr,readbuff)
-		skynet.error("msglen:"..msglen.."|namelen:"..namelen)
+		--skynet.error("msglen:"..msglen.."|namelen:"..namelen)
 		if bufflen<msglen+2 then
 			return readbuff
 		else
@@ -117,17 +117,16 @@ local disconnect = function(fd)
     if not c then
         return
     end
-
+    
     local playerid = c.playerID
-    --还没完成登录
-    if not playerid then
+
+    if not playerid then --还没完成登录
         return
-    --已在游戏中
-    else
+    else    --已在游戏中
         local gplayer = players[playerid]
         gplayer.conn = nil --  players[playerid] = nil
         skynet.error("wait for reconnect")
-        skynet.timeout(10*100, function()
+        skynet.timeout(20*100, function()
             if gplayer.conn ~= nil then
                 return
             end
@@ -279,7 +278,7 @@ s.resp.kick=function ( source,playerid )
 		return
 	end
 	conns[c.fd]=nil
-	disconnect(c.fd)
+	--disconnect(c.fd)
 	socket.close(c.fd)
 end
 

@@ -22,7 +22,7 @@ s.resp.client=function ( source,cmd,msg )
 		local ret_msg = s.client[cmd](msg,source)
 		if ret_msg then
 			--skynet.error("agent id in agent:"..s.id)
-			skynet.send(source,"lua","send",s.id,ret_msg)
+			skynet.send(source,"lua","send",s.aplayer.id,cmd,ret_msg)
 		end
 	else
 		skynet.error("s.resp.client fail ",cmd)
@@ -45,7 +45,7 @@ s.resp.kick=function ( source )
 	skynet.error("im kicked")
 	skynet.send("roommgr","lua","Exit",s.aplayer.name)
 	s.leave_scene()
-	skynet.sleep(200)
+	skynet.sleep(100)
 
 end
 
@@ -79,7 +79,7 @@ s.client.getRooms=function ( msg,source )
 end
 
 s.client.createRoom=function ( msg )
-	return skynet.call("roommgr","lua","CreateRoom",msg[2])
+	return skynet.call("roommgr","lua","CreateRoom",msg,s.aplayer.name)
 end
 
 s.client.joinRoom=function ( msg )

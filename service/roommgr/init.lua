@@ -6,11 +6,13 @@ local rooms = {}--[roomid]=room
 local playerRoom = {} --[playerName]=room
 local playerAgent = {} --[playerName]=agent
 
-local function GetRoom( roomName )
+local function GetRoom( roomName ,pw,creater)
 	local m = {
 		id=0,
 		name=roomName,
-		count=0,
+		count=1,
+		creater=creater,
+		pw=pw,
 		readyCount=0,
 		players={},
 		status="ready"
@@ -19,12 +21,18 @@ local function GetRoom( roomName )
 		if(self.count>=8) then
 			return false,{"joinRoom",1,"房间已满"}
 		end
-		self.players[playerName]="Join"
+		--self.players[playerName]="Join"
+		table.insert(self.players,{name=playerName,status="Join"})
 		self.count=self.count+1
 		return true,{"joinRoom",0,self.id..":"..self.name}
 	end
 	function m:Prepare( playerName )
-		self.players[playerName]="Ready"
+		for k,v in pairs(self.players) do
+			if (v.name==playerName) then
+				v.status="Ready"
+			end
+		end
+		--self.players[playerName]="Ready"
 		self.readyCount=self.readyCount+1
 		if self.readyCount==self.count then
 			return true --玩家全部就绪可以开始游戏
@@ -48,8 +56,9 @@ local function GetRoom( roomName )
 	return m
 end 
 
-s.resp.CreateRoom=function ( source,roomName )
-	local room = GetRoom(roomName)
+s.resp.CreateRoom=function ( source,msg ,playerName )
+	local msgpb = pb.decode("PMRoom.PBCreateRoom",msg)
+	local room = GetRoom(msgpb.name,msgpb.pw,playerName)
 	local isok=false
 	for i=1,100 do
 		if rooms[i]==nil then
@@ -60,13 +69,17 @@ s.resp.CreateRoom=function ( source,roomName )
 		end
 	end
 	if not isok then 
-		return {"room",1,"房间数量已达上限"}
-	else
-		return {"room",0,room.id}
+		room.id=-1
 	end
-	--[[
+	isok=room:Join(playerName)
+	if not isok then
+		room.id=-1
+	else
+		playerRoom[playerName]=room
+		playerAgent[playerName]=source
+	end
 
-	--]]
+	return pd.encode("PMRoom.PBRoomInfo",room)
 end
 
 s.resp.JoinRoom=function ( source,playerName,roomid,agent )
