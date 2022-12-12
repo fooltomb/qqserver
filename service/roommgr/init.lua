@@ -179,7 +179,7 @@ s.resp.GetRoomList=function ( agentid,source )
 end
 
 function s.init( )
-	--pb.register_file("./proto/PMPlayer.pb")
+	pb.register_file("./proto/PMRoom.pb")
 	local room = GetRoom("TestRoom","ttt","testPlayer")
 	rooms[2]=room;
 	room.id=2
