@@ -78,7 +78,7 @@ s.client.getRooms=function ( msg,source )
 	return skynet.call("roommgr","lua","GetRoomList",s.id,source)
 end
 
-s.client.createRoom=function ( msg )
+s.client.createRoom=function ( msg,source )
 	return skynet.call("roommgr","lua","CreateRoom",msg,s.aplayer.name)
 end
 
