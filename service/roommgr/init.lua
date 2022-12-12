@@ -56,8 +56,8 @@ local function GetRoom( roomName ,pw,creater)
 	return m
 end 
 
-s.resp.CreateRoom=function ( source,msg ,playerName )
-	local msgpb = pb.decode("PMRoom.PBCreateRoom",msg)
+s.resp.CreateRoom=function ( source,msg,playerName )
+	local msgpb = pb.decode("PMPlayer.PBCreateRoom",msg)
 	local room = GetRoom(msgpb.name,msgpb.pw,playerName)
 	local isok=false
 	for i=1,100 do
@@ -179,7 +179,7 @@ s.resp.GetRoomList=function ( agentid,source )
 end
 
 function s.init( )
-	pb.register_file("./proto/PMRoom.pb")
+	--pb.register_file("./proto/PMRoom.pb")
 end
 
 s.start(...)
