@@ -10,7 +10,7 @@ local function GetRoom( roomName ,pw,creater)
 	local m = {
 		id=0,
 		name=roomName,
-		count=1,
+		count=0,
 		creater=creater,
 		pw=pw,
 		readyCount=0,
@@ -175,10 +175,8 @@ s.resp.GetRoomList=function ( source,agentid )
 		roomInfo.creater=v.creater
 		roomInfo.pw=v.pw
 		roomInfo.count=v.count
-		roomInfo.players={}
-		for kp,vp in pairs(v.players) do
-			table.insert(roomInfo.players,{name=kp,status=vp})
-		end
+		roomInfo.players=v.players
+
 		local ret_json = cjson.encode(roomInfo)
 		skynet.error("send room list:"..ret_json)
 		skynet.send(source,"lua","send",agentid,"getRooms",ret_json)
