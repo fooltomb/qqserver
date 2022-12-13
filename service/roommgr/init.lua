@@ -79,7 +79,7 @@ s.resp.CreateRoom=function ( source,msg,playerName )
 		playerAgent[playerName]=source
 	end
 
-	return json.encode(room)
+	return cjson.encode(room)
 end
 
 s.resp.JoinRoom=function ( source,playerName,roomid,agent )
@@ -89,12 +89,11 @@ s.resp.JoinRoom=function ( source,playerName,roomid,agent )
 		playerRoom[playerName]=room
 		playerAgent[playerName]=agent
 	end
-	local playerState = ""
+
+	local playerState = {name=playerName,status="Exit"}
+
 	for k,v in pairs(room.players) do
-		playerState=playerState..k..":"..v..";"
-	end
-	for k,v in pairs(room.players) do
-		skynet.send(playerAgent[k],"lua","send",{"roomPlayer",0,playerState})
+		skynet.send(playerAgent[k],"lua","send","roomPlayer",playerState)
 	end
 	return ret
 end
@@ -173,6 +172,7 @@ s.resp.GetRoomList=function ( agentid,source )
 			table.insert(roomInfo.players,{name=kp,status=vp})
 		end
 		local ret_json = cjson.encode(roomInfo)
+		skynet.error("send room list")
 		skynet.send(source,"lua","send",agentid,"getRooms",ret_json)
 	end
 	return 
