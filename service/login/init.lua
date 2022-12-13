@@ -28,7 +28,7 @@ s.client.login=function ( fd,msg,source )
 end
 
 s.client.register=function ( fd,msg,source )
-	local msgjson = cjson.decode(,msg)
+	local msgjson = cjson.decode(msg)
 	local playername = msgjson.name
 	local pwd = msgjson.pw
 	local gate = source
