@@ -29,8 +29,8 @@ s.resp.client=function ( source,cmd,msg )
 	end
 end
 
-s.resp.send=function ( source,msg )
-	skynet.send(s.gate,"lua","send",s.id,msg)
+s.resp.send=function ( source,cmd,msg )
+	skynet.send(s.gate,"lua","send",s.id,cmd,msg)
 end
 
 s.init=function (  )

@@ -78,8 +78,16 @@ s.resp.CreateRoom=function ( source,msg,playerName )
 		playerRoom[playerName]=room
 		playerAgent[playerName]=source
 	end
+	local roomjson = {
+		id=room.id,
+		name=room.name,
+		count=room.count,
+		creater=creater,
+		pw=room.pw,
+		players=room.players
+	}
 
-	return cjson.encode(room)
+	return cjson.encode(roomjson)
 end
 
 s.resp.JoinRoom=function ( source,playerName,roomid,agent )
