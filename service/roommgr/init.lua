@@ -180,6 +180,7 @@ end
 
 function s.init( )
 	--pb.register_file("./proto/PMRoom.pb")
+	skynet.error("create test room")
 	local room = GetRoom("TestRoom","ttt","testPlayer")
 	rooms[2]=room;
 	room.id=2
