@@ -173,7 +173,7 @@ s.resp.GetRoomList=function ( agentid,source )
 			table.insert(roomInfo.players,{name=kp,status=vp})
 		end
 		local ret_json = cjson.encode(roomInfo)
-		skynet.send(source,"lua","send",agentid,"getRooms",ret_pb)
+		skynet.send(source,"lua","send",agentid,"getRooms",ret_json)
 	end
 	return 
 end
