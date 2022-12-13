@@ -73,9 +73,9 @@ s.client.setPlayer=function ( playerInfo )
 	--return {"playerInfo",0,string.format("%s;%d;%d;%d;%d;%d;%d",s.aplayer.name,s.aplayer.kill,s.aplayer.death,s.aplayer.win,s.aplayer.score,s.aplayer.match,s.id)}
 	return
 end
-s.client.getRooms=function ( msg,source )
+s.client.getRooms=function ( msg )
 	--skynet.error(msg)
-	return skynet.call("roommgr","lua","GetRoomList",s.id,source)
+	return skynet.call("roommgr","lua","GetRoomList",s.id)
 end
 
 s.client.createRoom=function ( msg,source )

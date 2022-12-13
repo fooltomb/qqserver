@@ -166,7 +166,7 @@ s.resp.Exit=function ( source,playerName )
 	playerAgent[playerName]=nil
 end
 
-s.resp.GetRoomList=function ( agentid,source )
+s.resp.GetRoomList=function ( source,agentid )
 	--skynet.error("roomMgr Get RoomList")
 	for k,v in pairs(rooms) do
 		local roomInfo = {}
@@ -180,7 +180,7 @@ s.resp.GetRoomList=function ( agentid,source )
 			table.insert(roomInfo.players,{name=kp,status=vp})
 		end
 		local ret_json = cjson.encode(roomInfo)
-		skynet.error("send room list")
+		skynet.error("send room list:"..ret_json)
 		skynet.send(source,"lua","send",agentid,"getRooms",ret_json)
 	end
 	return 
