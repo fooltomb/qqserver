@@ -81,6 +81,7 @@ local process_msg=function ( fd,cmd,msgpb )
 		else
 			local gplayer = players[playerID]
 			local agent = gplayer.agent
+			skynet.error("receive "..msg)
 			skynet.send(agent,"lua","client",cmd,msg)
 		end
 	end
