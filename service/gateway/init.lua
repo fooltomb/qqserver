@@ -52,17 +52,8 @@ local str_pack = function ( cmd,msg )
 	return buff
 end
 
-local process_msg=function ( fd,cmd,msgpb )
-	--[[skynet.error("cmd:"..cmd)
-	local umsg = pb.decode("login.Login",msgpb)
+local process_msg=function ( fd,cmd,msg )
 
-	if umsg then
-		skynet.error("id:"..umsg.id)
-		skynet.error("pw:"..umsg.pw)
-	else
-		skynet.error("error")
-	end
-	--]]
 	if(cmd~="shift") then
 		skynet.error("receive "..fd.."["..cmd.."]")
 	end
@@ -73,7 +64,7 @@ local process_msg=function ( fd,cmd,msgpb )
 		local nodecfg = runconfig[node]
 		local loginid = math.random(1,#nodecfg.login)
 		local login = "login"..loginid
-		skynet.send(login,"lua","client",fd,cmd,msgpb)
+		skynet.send(login,"lua","client",fd,cmd,msg)
 	else		
 		if cmd=="exit" then
 			local isok=skynet.call("agentmgr","lua","reqkick",playerID,"主动退出")
@@ -81,7 +72,7 @@ local process_msg=function ( fd,cmd,msgpb )
 		else
 			local gplayer = players[playerID]
 			local agent = gplayer.agent
-			skynet.error("receive "..msg)
+			--skynet.error("receive "..msg)
 			skynet.send(agent,"lua","client",cmd,msg)
 		end
 	end
