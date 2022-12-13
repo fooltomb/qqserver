@@ -1,15 +1,15 @@
 local skynet = require "skynet"
 local s = require "service"
-local pb = require "protobuf"
+local cjson= require "cjson"
 
 s.client={}
 
 s.client.login=function ( fd,msg,source )
 
-	local msgpb = pb.decode("PMPlayer.PBLogin",msg)
+	local msgjson = cjson.decode(msg)
 	--skynet.error("login recv "..msgpb.name.." "..msgpb.pw)
-	local playername=msgpb.name
-	local pwd = msgpb.pw
+	local playername=msgjson.name
+	local pwd = msgjson.pw
 	local gate = source
 	node = skynet.getenv("node")
 	local isok,agent,playerInfo = skynet.call("agentmgr","lua","reqlogin",playername,pwd,node,gate)
@@ -28,9 +28,9 @@ s.client.login=function ( fd,msg,source )
 end
 
 s.client.register=function ( fd,msg,source )
-	local msgpb = pb.decode("PMPlayer.PBLogin",msg)
-	local playername = msgpb.name
-	local pwd = msgpb.pw
+	local msgjson = cjson.decode(,msg)
+	local playername = msgjson.name
+	local pwd = msgjson.pw
 	local gate = source
 	node=skynet.getenv("node")
 	local isok,agent,playerInfo = skynet.call("agentmgr","lua","reqregister",playername,pwd,node,gate)
@@ -54,7 +54,7 @@ s.resp.client=function ( source,fd,cmd,msg )
 	if s.client[cmd] then
 		local ret_msg = s.client[cmd](fd,msg,source)
 		--skynet.error("login return")
-		local ret_pb = pb.encode("PMPlayer.PBPlayerInfo",ret_msg)
+		local ret_json = cjson.encode(ret_msg)
 		skynet.send(source,"lua","send_by_fd",fd,cmd,ret_pb)
 	else
 		skynet.error("s.resp.client fail",cmd)
@@ -62,7 +62,7 @@ s.resp.client=function ( source,fd,cmd,msg )
 end
 
 function s.init( )
-	pb.register_file("./proto/PMPlayer.pb")
+	--pb.register_file("./proto/PMPlayer.pb")
 end
 
 s.start(...)

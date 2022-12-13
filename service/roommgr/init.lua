@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 local s = require "service"
-local pb = require "protobuf"
+local cjson = require "cjson"
 
 local rooms = {}--[roomid]=room
 local playerRoom = {} --[playerName]=room
@@ -57,8 +57,8 @@ local function GetRoom( roomName ,pw,creater)
 end 
 
 s.resp.CreateRoom=function ( source,msg,playerName )
-	local msgpb = pb.decode("PMPlayer.PBCreateRoom",msg)
-	local room = GetRoom(msgpb.name,msgpb.pw,playerName)
+	local msgjson = cjson.decode(msg)
+	local room = GetRoom(msgjson.name,msgjson.pw,playerName)
 	local isok=false
 	for i=1,100 do
 		if rooms[i]==nil then
@@ -79,7 +79,7 @@ s.resp.CreateRoom=function ( source,msg,playerName )
 		playerAgent[playerName]=source
 	end
 
-	return pd.encode("PMRoom.PBRoomInfo",room)
+	return json.encode(room)
 end
 
 s.resp.JoinRoom=function ( source,playerName,roomid,agent )
@@ -172,14 +172,14 @@ s.resp.GetRoomList=function ( agentid,source )
 		for kp,vp in pairs(v.players) do
 			table.insert(roomInfo.players,{name=kp,status=vp})
 		end
-		local ret_pb = pb.encode("PMRoom.PBRoomInfo",roomInfo)
+		local ret_json = cjson.encode(roomInfo)
 		skynet.send(source,"lua","send",agentid,"getRooms",ret_pb)
 	end
 	return 
 end
 
 function s.init( )
-	pb.register_file("./proto/PMRoom.pb")
+	--pb.register_file("./proto/PMRoom.pb")
 	local room = GetRoom("TestRoom","ttt","testPlayer")
 	rooms[2]=room;
 	room.id=2
