@@ -57,7 +57,7 @@ local function GetRoom( roomName ,pw,creater,roomSize)
 	return m
 end 
 
-s.resp.CreateRoom=function ( source,msg,playerName,size)
+s.resp.CreateRoom=function ( source,msg,playerName )
 	local msgjson = cjson.decode(msg)
 	local room = GetRoom(msgjson.name,msgjson.pw,playerName,msgjson.size)
 	local isok=false
