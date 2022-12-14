@@ -19,6 +19,8 @@ local function GetRoom( roomName ,pw,creater,roomSize)
 		status="ready"
 	}
 	function m:Join( playerName )
+		skynet.error("joinCount:"..self.joinCount)
+		skynet.error("size:"..self.size)
 		if(self.joinCount>=self.size) then
 			return false,{"joinRoom",1,"房间已满"}
 		end
