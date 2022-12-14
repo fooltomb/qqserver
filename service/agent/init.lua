@@ -19,7 +19,7 @@ require "scene"
 s.resp.client=function ( source,cmd,msg )
 	s.gate=source
 	if s.client[cmd] then
-		local ret_msg = s.client[cmd](msg,source)
+		local ret_msg = s.client[cmd](msg)
 		if ret_msg then
 			--skynet.error("agent id in agent:"..s.id)
 			skynet.send(source,"lua","send",s.aplayer.id,cmd,ret_msg)
@@ -78,7 +78,7 @@ s.client.getRooms=function ( msg )
 	return skynet.call("roommgr","lua","GetRoomList")
 end
 
-s.client.createRoom=function ( msg,source )
+s.client.createRoom=function ( msg )
 	return skynet.call("roommgr","lua","CreateRoom",msg,s.aplayer.name)
 end
 

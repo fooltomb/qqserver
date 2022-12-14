@@ -6,14 +6,15 @@ local rooms = {}--[roomid]=room
 local playerRoom = {} --[playerName]=room
 local playerAgent = {} --[playerName]=agent
 
-local function GetRoom( roomName ,pw,creater)
+local function GetRoom( roomName ,pw,creater,roomSize)
 	local m = {
 		id=0,
 		name=roomName,
-		count=0,
+		size=tonumber(roomSize),
 		creater=creater,
 		pw=pw,
 		readyCount=0,
+		joinCount=0,
 		players={},
 		status="ready"
 	}
@@ -56,9 +57,9 @@ local function GetRoom( roomName ,pw,creater)
 	return m
 end 
 
-s.resp.CreateRoom=function ( source,msg,playerName )
+s.resp.CreateRoom=function ( source,msg,playerName,size)
 	local msgjson = cjson.decode(msg)
-	local room = GetRoom(msgjson.name,msgjson.pw,playerName)
+	local room = GetRoom(msgjson.name,msgjson.pw,playerName,msgjson.size)
 	local isok=false
 	for i=1,100 do
 		if rooms[i]==nil then
@@ -81,7 +82,7 @@ s.resp.CreateRoom=function ( source,msg,playerName )
 	local roomjson = {
 		id=room.id,
 		name=room.name,
-		count=room.count,
+		size=room.size,
 		creater=creater,
 		pw=room.pw,
 		players=room.players
@@ -174,7 +175,7 @@ s.resp.GetRoomList=function ( source )
 		roomInfo.name=v.name
 		roomInfo.creater=v.creater
 		roomInfo.pw=v.pw
-		roomInfo.count=v.count
+		roomInfo.size=v.size
 		roomInfo.players=v.players
 
 		local ret_json = cjson.encode(roomInfo)

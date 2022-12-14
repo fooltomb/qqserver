@@ -80,7 +80,7 @@ end
 s.resp.reqlogin=function ( source,playername,pwd,node,gate )
 	local playerInfo = {
 		id=0,
-		name="",
+		name=playername,
 		kill=0,
 		death=0,
 		win=0,
@@ -194,7 +194,7 @@ s.init=function (  )
 		host="127.0.0.1",
 		port="3306",
 		user="root",
-		password="123456",
+		password="e9bcb58e",
 		database="beanfight",
 		max_packet_size=1024*1024,
 		on_connect=nil
