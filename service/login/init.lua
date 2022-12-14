@@ -55,6 +55,7 @@ s.resp.client=function ( source,fd,cmd,msg )
 		local ret_msg = s.client[cmd](fd,msg,source)
 		--skynet.error("login return")
 		local ret_json = cjson.encode(ret_msg)
+		skynet.error("resturn msg:"..ret_msg)
 		skynet.send(source,"lua","send_by_fd",fd,cmd,ret_json)
 	else
 		skynet.error("s.resp.client fail",cmd)

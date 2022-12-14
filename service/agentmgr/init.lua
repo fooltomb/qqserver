@@ -52,7 +52,7 @@ s.resp.reqregister=function ( source,playername,pwd,node,gate)
 	--dump(res)
 	local playerInfo = {
 		id=0,
-		name="",
+		name=playername,
 		kill=0,
 		death=0,
 		win=0,

@@ -179,7 +179,7 @@ s.resp.GetRoomList=function ( source )
 		roomInfo.players=v.players
 
 		local ret_json = cjson.encode(roomInfo)
-		skynet.error("send room list:"..ret_json)
+		--skynet.error("send room list:"..ret_json)
 		skynet.send(source,"lua","send","getRooms",ret_json)
 	end
 	return 
@@ -188,7 +188,7 @@ end
 function s.init( )
 	--pb.register_file("./proto/PMRoom.pb")
 	skynet.error("create test room")
-	local room = GetRoom("TestRoom","ttt","testPlayer",7)
+	local room = GetRoom("TestRoom","ttt","testPlayer",5)
 	rooms[2]=room;
 	room.id=2
 	room:Join("testPlayer")
