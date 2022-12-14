@@ -19,12 +19,12 @@ local function GetRoom( roomName ,pw,creater,roomSize)
 		status="ready"
 	}
 	function m:Join( playerName )
-		if(self.count>=8) then
+		if(self.joinCount>=self.size) then
 			return false,{"joinRoom",1,"房间已满"}
 		end
 		--self.players[playerName]="Join"
 		table.insert(self.players,{name=playerName,status="Join"})
-		self.count=self.count+1
+		self.joinCount=self.joinCount+1
 		return true,{"joinRoom",0,self.id..":"..self.name}
 	end
 	function m:Prepare( playerName )
